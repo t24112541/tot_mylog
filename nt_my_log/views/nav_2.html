@@ -1,0 +1,184 @@
+
+<!-- Topbar -->
+        <nav class="navbar navbar-expand  topbar mb-4 static-top shadow" >
+
+          <!-- Sidebar Toggle (Topbar) -->
+          <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+          </button>
+
+          <!-- Topbar Navbar -->
+          <ul class="navbar-nav ml-auto">
+
+           
+
+            <div class="topbar-divider d-none d-sm-block"></div>
+
+            <!-- Nav Item - User Information -->
+            <li class="nav-item dropdown no-arrow">
+              <a class="nav-link dropdown-toggle" href="#" onclick="" id="usr_setting" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-user " style="color:rgb(77, 77, 77)"></i>
+                <!-- <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60"> -->
+              </a>
+              <!-- Dropdown - User Information -->
+              <div  class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="usr_setting">
+                <div id="user_profile"></div>
+                
+              </div>
+            </li>
+            
+          </ul>
+
+        </nav>
+        
+<!-- <script src="./js/sb-admin-2.min.js"></script> -->
+<script type="text/javascript">
+	var link_page_usr=link+"/cc_employee.php";
+  var emp_id="";
+  load_user();
+  $("#confirm_e_password").keyup(function(){
+        if($("#e_password").val()!=$("#confirm_e_password").val()){
+            $("#btn_save").prop('disabled', true)
+        }else{
+            $("#btn_save").prop('disabled', false)
+        }    
+  });
+  function load_user(){
+      let txt="";
+      $.ajax({
+        type:"POST",
+        url:link_page_usr,
+        data:{
+          "load_e_name":true,
+        }
+      }).done((res)=>{
+        var data=JSON.parse(res);
+        emp_id=data[0].e_id;
+        txt=`
+        
+                <a class="dropdown-item" href="#" onclick="sh_data_usr('${data[0].e_id }','${data[0].e_name}','${data[0].e_lname}','${data[0].ps_id}','${data[0].ps_name}','${data[0].e_address}','${data[0].e_tel}','${data[0].e_username}','${data[0].e_password}','${data[0].pv_id}','${data[0].pv_name}')">
+                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>${data[0].e_name} ${data[0].e_lname}
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                  ออกจากระบบ
+                </a>
+        `;
+        load_cc_position_nav();
+        load_cc_province_nav();
+        $("#user_profile").html(txt);
+      });
+  }
+  function update_usr(){
+			$("#msg").html("");
+			let f_data=new FormData();
+			let data = $("#frm_cc_employee").serializeArray();
+			$.each(data,(key,val)=>{
+        // if(val.name!="pv_id_usr" || val.name!="ps_id_usr"){
+          if((val.name=="e_password" || val.name=="confirm_e_password") && val.value!="" ){
+            val.value=re_encode(val.value);
+          }
+          f_data.append(val.name,val.value);
+        // }
+        
+			});
+			f_data.append("cc_employee_update",true);
+      f_data.append("pv_id",$("#pv_id_usr").val());
+      f_data.append("ps_id",$("#ps_id_usr").val());
+
+			event.preventDefault();
+
+				$.ajax({
+					type: "POST",
+		 			url:link_page_usr,
+		 			data: f_data,
+					contentType: false,
+					processData: false,
+				}).done((res)=> {
+					let data=JSON.parse(res);
+					if(data.status){
+						$("#modal_cc_employee_usr").modal('toggle');
+						load_user();
+						clear_input_usr();
+					}else{
+						$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
+					}
+				});	
+	}	
+  function load_cc_position_nav(){
+		let txt=`<option value="01" selected disabled>เลือกตำแหน่งพนักงาน</option>`;
+		$("#loading").show();
+		$.ajax({
+			type:"POST",
+			url:link+"/cc_position.php",
+			data:{
+				"load_cc_position":true,
+			}
+		}).done((res)=>{
+			var data=JSON.parse(res);
+			if(!data.msg){
+				$.each(data,(i, item)=>{
+					txt+=`<option value="${item.ps_id}">${item.ps_name}</option>`;
+				});
+			}
+			$("#loading").hide();
+			$("#ps_id_usr").html(txt);
+		});
+	}
+	function load_cc_province_nav(){
+		let txt=`<option value="01" selected disabled>เลือกจังหวัดพนักงาน</option>`;
+		$("#loading").show();
+		$.ajax({
+			type:"POST",
+			url:link+"/cc_province.php",
+			data:{
+				"load_cc_province":true,
+			}
+		}).done((res)=>{
+			var data=JSON.parse(res);
+			if(!data.msg){
+				$.each(data,(i, item)=>{
+					txt+=`<option value="${item.pv_id}">${item.pv_name}</option>`;
+				});
+			}
+			$("#loading").hide();
+			$("#pv_id_usr").html(txt);
+		});
+	}
+  function clear_input_usr(){
+		$("#hidden").html('');
+		$("#e_name").val('');
+    $("#e_lname").val('');
+    $("#ps_id_usr").val('');
+		$("#pv_id_usr").val('');
+
+    $("#e_address").val('');
+    $("#e_tel").val('');
+    $("#e_username").val('');
+    $("#e_password").val('');
+    $("#confirm_e_password").val('');
+		$("#frm_cc_employee").removeClass("was-validated");
+    $("#msg").html('');
+	}
+  function sh_data_usr(e_id,e_name,e_lname,ps_id,ps_name,e_address,e_tel,e_username,e_password,pv_id,pv_name){
+    
+		clear_input_usr();
+		let txt=`
+    <button id="btn_del" data-dismiss="modal" data-toggle="modal" data-target="#del_modal" type="button" class="btn btn-danger" data-dismiss=""><i class="fas fa-trash-alt fa-1x"></i> ลบ</button>
+		<button id="btn_save" onclick="update_usr()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
+		let hiden=`<input type="hidden" name="e_id" id="e_id" value="${e_id}">`;
+		$("#hidden").html(hiden);
+		$("#e_name").val(e_name);
+    $("#e_lname").val(e_lname);
+    $("#ps_id_usr").val(ps_id);
+		$("#pv_id_usr").val(pv_id);
+    $("#e_address").val(e_address);
+    $("#e_tel").val(e_tel);
+    $("#e_username").val(e_username);
+
+		$("#modal_cc_employee_usr").modal('toggle');
+		$("#mng_usr").html(txt);
+	}
+  // 
+</script>

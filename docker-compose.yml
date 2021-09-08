@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: db_nt_my_log
+    volumes:
+      - ./db/initdb/:/docker-entrypoint-initdb.d
+      - ./db/data/:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PW}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - "9907:3306"
+  web:
+    build: .
+    image: php:7.2.2-apache
+    container_name: nt_my_log
+    depends_on:
+      - db
+    volumes:
+      - ./nt_my_log/:/var/www/html/
+    environment:
+      DEV: production
+      MYSQL_HOST: ${DB_HOST}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PW}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - "8001:80"
+    stdin_open: true
+    tty: true

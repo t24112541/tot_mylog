@@ -1,0 +1,66 @@
+<div id="loading" class="spinner_border text-primary" style="display:none"></div>
+<!-- Content Column -->
+<div class="d-sm-flex align-items-center justify-content-between mb-2">
+    <h1 class="h3 mb-0 text-gray-800">log</h1>
+    <div class="">
+        
+    </div>    
+</div>
+<div class="row">
+    <div class="col-lg-12 mb-4">
+        <!-- Project Card  -->
+        <div class="card shadow mb-4">
+            <div class="card-header d-sm-flex align-items-center justify-content-between mb-2">
+                <h6 class="m-0 font-weight-bold text-primary">log</h6>
+            </div>
+            <div class="card-body">
+                <div id="sh_log"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+	var data;
+	var tmp_page=1;
+	var tmp_filter='';
+	// -------------------------- onload ---------------------------//
+	var link_page=link+"/get_log.php";
+
+	get_log('',tmp_page);
+	// ------------------------- function -------------------------//
+
+	function get_log(filter,page){
+			let txt='';
+			tmp_filter=filter;
+			$("#loading").show();
+			$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"get_log":true,
+					"filter":filter,
+					"page":page
+				}
+			}).done((res)=>{
+				var data=JSON.parse(res);
+					$.each(data,(i, item)=>{
+						txt+=`
+                            date : ${item.date}<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;ผู้ดำเนินการ : ${item.who}<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;การทำงาน : ${item.action}<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;ข้อมูล : ${item.what}<br>
+                            <hr>
+                        `;
+					});
+
+
+				$("#loading").hide();
+				$("#sh_log").html(txt);
+			});
+	}
+	
+	
+	
+</script>
+

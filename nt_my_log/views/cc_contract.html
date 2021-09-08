@@ -1,0 +1,490 @@
+<div id="loading" class="spinner_border text-primary" style="display:none"></div>
+<!-- Content Column -->
+<div class="d-sm-flex align-items-center justify-content-between mb-2">
+    <h1 class="h3 mb-0 text-gray-800">สัญญา</h1>
+    <div class="">
+        <form class="form-inline" id="frm_search">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                </div>
+                <input id="txt_search" type="text" class="form-control" placeholder="ค้นหา..">
+                <button type="button" onclick="func_search()" class="btn btn-light">ค้นหา</button>
+            </div>
+        </form>
+    </div>    
+</div>
+
+<div class="row">
+    <div class="col-lg-12 mb-4">
+        <!-- Project Card  -->
+        <div class="card shadow mb-4">
+            <div class="card-header d-sm-flex align-items-center justify-content-between mb-2">
+                <div class="col-sm-10" >
+                    <h2 id="top_content" class="h5 mb-0 text-gray-800"></h2>
+                </div>
+                <div class="con-sm-2">
+                    <a class=" d-sm-inline-block btn btn-sm btn btn-secondary shadow-sm" onclick="open_add()" data-toggle="modal" data-target="#modal_cc_contract"><i class="fas fa-plus-square fa-md text-white"></i></a>
+
+                </div>
+
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>ลำดับ</th>
+                                <th>รายการ</th>
+                                <th>ดู</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cc_contract_content"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="margin-top:10px;">
+	<ul class="pagination justify-content-center" id="pagination"></ul>
+</div>
+<div class="modal fade" id="modal_cc_contract" >
+    <div class="modal-dialog modal-lg" >
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header" id="head_stage">
+                <h4 class="modal-title">สัญญา</h4>
+                <button type="button" onclick="clear_input()" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            
+            <form id="frm_cc_contract" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row">
+						
+						
+                        <div class="col-md-6 mb-6">
+                            <label class="cv_keep-left" for="con_name">สัญญา <span style="color:red">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                </div>
+                                <input type="hidden" name="frm_mode" id="frm_mode">
+                                <input type="hidden" name="hidden" id="hidden">
+
+                                <input type="text" class="form-control" id="con_name" name="con_name" oninvalid="this.setCustomValidity('สัญญา')"required oninput="this.setCustomValidity('')" placeholder="สัญญา">
+                            </div>
+                        </div>   
+                        <div class="col-md-6 mb-6">
+                            <label class="cv_keep-left" for="con_date">วันที่ออกสัญญา <span style="color:red">*</span> </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                </div>
+                                <input type="date" class="form-control" oninvalid="this.setCustomValidity('วันที่ออกสัญญา')"required oninput="this.setCustomValidity('')"  id="con_date" name="con_date" >
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-12">
+                            <label class="cv_keep-left" for="con_des">รายละเอียด</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                </div>
+                                <textarea value="-" class="form-control" rows="3" id="con_des" name="con_des" placeholder="รายละเอียด"></textarea>                        
+                            </div>
+                        </div>  
+						<div class="col-md-12 mb-12" id="date_start"></div>
+
+						<div class="col-md-12 mb-12">
+							<div class="card-body" >
+								<div class="chart-area" id="break_area">
+									<canvas id="chart_break_even"></canvas>
+								</div>
+							</div>
+						</div>
+                    </div>
+                    <div id="frm"></div>
+                    <div id="msg"></div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer col-sm-12" id="modal_cc_contract_foot">	
+                    <div style="width:100%" id="mng"></div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+<script src="./libs/node_modules/chart.js/dist/chart.js"></script>
+  <!-- Page level plugins -->
+  <script src="vendor/chart.js/Chart.min.js"></script>
+
+<script type="text/javascript">
+	// Set new default font family and font color to mimic Bootstrap's default styling
+	Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+	Chart.defaults.global.defaultFontColor = '#858796';
+	var data;
+	var tmp_page=1;
+	var tmp_filter='';
+	// -------------------------- onload ---------------------------//
+	var link_page=link+"/cc_contract.php";
+    var c_id=$_rec.add_cc_contract;
+
+	open_add();
+	load_cc_contract('',tmp_page);
+	// ------------------------- function -------------------------//
+	$(document).on('keypress',function(e) {
+        
+	    if(e.which == 13) {
+            
+	        if($("#frm_mode").val()==2){
+	    		update();
+	    	}else{
+	    		add();
+	    	}
+	    }
+        
+	});
+    $("#txt_search").keyup(function(){
+        $("#frm_mode").val(3);
+    });
+    
+	function func_search(){
+		load_cc_contract($("#txt_search").val(),tmp_page);
+	}
+	$("#frm_search" ).submit(function( event ) {
+	  func_search();
+	  event.preventDefault();
+	});
+	function open_add(){
+        $("#frm_mode").val(1);
+		clear_input();
+		let txt=`<button id="btn_save" onclick="add()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
+		$("#mng").html(txt);
+	}
+    function cc_equipment(c_id,c_name,c_lname,con_id){
+		let link_next=`?cc_equipment=${c_id}&&c_name=${c_name}&&c_lname=${c_lname}&&con_id=${con_id}`;
+		window.location.href = link_next;
+	}
+	function sh_data(con_id ,con_name,con_date,con_des){
+		break_even(con_id,con_date);
+        $("#frm_mode").val(2);
+		clear_input();
+		let txt='';
+		if(emp_id==1234567){
+			txt=`<button id="btn_del" data-dismiss="modal" data-toggle="modal" data-target="#del_modal" type="button" class="btn btn-danger" data-dismiss=""><i class="fas fa-trash-alt fa-1x"></i> ลบ</button>
+			<button style="margin-left:30%" id="btn_del" onclick="cc_equipment(${$_rec.add_cc_contract},'${$_rec.c_name}','${$_rec.c_lname}','${con_id}')" type="button" class="btn btn-default" data-dismiss=""><i class="fas fa-clipboard-list fa-1x"></i> รายการติดตั้ง</button>
+			<button style="position: absolute;right: 0;margin-right:5%" id="btn_save" onclick="update()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
+		}else{
+			txt=`<button style="margin-left:0%" id="btn_del" onclick="cc_equipment(${$_rec.add_cc_contract},'${$_rec.c_name}','${$_rec.c_lname}','${con_id}')" type="button" class="btn btn-default" data-dismiss=""><i class="fas fa-clipboard-list fa-1x"></i> รายการติดตั้ง</button>`;
+		}
+		let hiden=`<input type="hidden" name="con_id" id="con_id" value="${con_id}">`;
+		
+		$("#hidden").html(hiden);
+		$("#con_name").val(con_name);
+        $("#con_date").val(con_date);
+        $("#con_des").val(con_des);
+		
+		$("#modal_cc_contract").modal('toggle');
+		$("#mng").html(txt);
+	}
+	function resetCanvas(){
+		$('#chart_break_even').remove(); // this is my <canvas> element
+		$('#break_area').append('<canvas id="chart_break_even"><canvas>');
+		canvas = document.querySelector('#chart_break_even');
+		ctx = canvas.getContext('2d');
+		ctx.canvas.width = $('#graph').width(); // resize to parent width
+		ctx.canvas.height = $('#graph').height(); // resize to parent height
+		var x = canvas.width/2;
+		var y = canvas.height/2;
+		ctx.font = '10pt Verdana';
+		ctx.textAlign = 'center';
+		ctx.fillText('This text is centered on the canvas', x, y);
+	};
+	function break_even(con_id,con_date){
+		resetCanvas();
+		// ,eq_base,eq_price,eq_discount
+		$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"break_even":true,
+					"con_id":con_id,
+				}
+			}).done((res)=>{
+				var data=JSON.parse(res);
+				let benefit=data.break_even;
+				console.log(data);
+				let date=chk_date(con_date);
+				let ds=`
+						ต้นทุนรวม : ${data.sum_base} <br>
+						รายได้รวม : ${data.sum_money} <br>
+						<center>
+							นับจากวันที่ :
+							${date}
+						</center>`;
+				$("#date_start").html(ds);
+				var ctx = document.getElementById("chart_break_even");
+				var myLineChart = new Chart(ctx, {
+					type: 'line',
+					data: {
+					labels: ["1", "2", "3", "4", "5", "6", "7","8", "9", "10", "11", "12"],
+					datasets: [{
+						label: "จุดคืนทุน",
+						lineTension: 0.3,
+						backgroundColor: "rgba(78, 115, 223, 0.05)",
+						borderColor: "rgba(78, 115, 223, 1)",
+						pointRadius: 3,
+						pointBackgroundColor: "rgba(78, 115, 223, 1)",
+						pointBorderColor: "rgba(78, 115, 223, 1)",
+						pointHoverRadius: 3,
+						pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+						pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+						pointHitRadius: 12,
+						pointBorderWidth: 2,
+						data: benefit,
+						fill:false
+					}],
+					},
+					options: {
+					maintainAspectRatio: false,
+					layout: {
+						padding: {
+						left: 10,
+						right: 25,
+						top: 25,
+						bottom: 0
+						}
+					},
+					scales: {
+						xAxes: [{
+						time: {
+							unit: 'date'
+						},
+						gridLines: {
+							display: false,
+							drawBorder: false
+						},
+						}],
+						yAxes: [{
+						ticks: {
+							maxTicksLimit: 5,
+							padding: 10,
+							callback: function(value, index, values) {
+							return number_format(value)+' ฿';
+							}
+						},
+						gridLines: {
+							color: "rgb(234, 236, 244)",
+							zeroLineColor: "rgb(234, 236, 244)",
+							drawBorder: false,
+							borderDash: [2],
+							zeroLineBorderDash: [2]
+						}
+						}],
+					},
+					tooltips: {
+						
+						backgroundColor: "rgb(255,255,255)",
+						bodyFontColor: "#858796",
+						titleMarginBottom: 12,
+						titleFontColor: '#6e707e',
+						titleFontSize: 14,
+						borderColor: '#dddfeb',
+						borderWidth: 1,
+						xPadding: 15,
+						yPadding: 15,
+						displayColors: false,
+						intersect: false,
+						mode: 'index',
+						caretPadding: 12,
+						callbacks: {
+						label: function(tooltipItem, chart) {
+							var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+							var datasetborderColor = chart.datasets[tooltipItem.datasetIndex].borderColor || '';
+							return datasetLabel + number_format(tooltipItem.yLabel)+ `: ฿`
+						},
+
+						}
+					}
+					}
+				});
+			});
+	}
+	function clear_input(){
+		$("#hidden").html('');
+		$("#con_name").val('');
+        $("#con_date").val('');
+        $("#con_des").val('');
+		$("#frm_cc_contract").removeClass("was-validated");
+        $("#msg").html('');
+	}
+	function add(){
+		$("#msg").html("");
+		let sta=0;
+        if($("#con_name").val()==""){sta++;}
+		if(sta!=0){$("#frm_cc_contract").addClass("was-validated");return false;}
+		else{
+			let f_data=new FormData();
+			let data = $("#frm_cc_contract").serializeArray();
+			$.each(data,(key,val)=>{
+				f_data.append(val.name,val.value);
+			});
+			f_data.append("cc_contract_add",true);
+            f_data.append("c_id",c_id);
+			event.preventDefault();
+			$.ajax({
+				type: "POST",
+	 			url:link_page,
+	 			data: f_data,
+				contentType: false,
+				processData: false,
+			}).done((res)=> {
+				let data=JSON.parse(res);
+				if(data.status){
+					$("#modal_cc_contract").modal('toggle');
+					load_cc_contract('',tmp_page);
+					clear_input();
+				}else{
+					$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
+				}	 				
+	 		});
+		}
+	}	
+	function update(){
+			$("#msg").html("");
+			let f_data=new FormData();
+			let data = $("#frm_cc_contract").serializeArray();
+			$.each(data,(key,val)=>{
+				f_data.append(val.name,val.value);
+			});
+			f_data.append("cc_contract_update",true);
+			event.preventDefault();
+
+				$.ajax({
+					type: "POST",
+		 			url:link_page,
+		 			data: f_data,
+					contentType: false,
+					processData: false,
+				}).done((res)=> {
+					let data=JSON.parse(res);
+					if(data.status){
+						$("#modal_cc_contract").modal('toggle');
+						load_cc_contract(tmp_filter,tmp_page);
+						clear_input();
+					}else{
+						$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
+					}
+				});	
+	}	
+	function del(){
+			$("#msg").html("");
+			$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"con_id":$("#con_id").val(),
+					"cc_contract_del":true
+				}
+			}).done((res)=>{
+				let data=JSON.parse(res);
+				if(data.status){
+					// $("#modal_cc_contract").modal('toggle');
+					load_cc_contract(tmp_filter,tmp_page);
+					clear_input();
+				}else{
+					$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
+				}
+
+			});
+	}
+	function cal_show(price,price_dis){
+        var total=(price)-((price)*((price_dis)/100));
+        return total;
+    }
+	function load_cc_contract(filter,page){
+        
+			let txt;
+			tmp_filter=filter;
+			$("#loading").show();
+			$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"load_cc_contract":true,
+					"c_id":$_rec.add_cc_contract,
+					"filter":filter,
+					"page":page
+				}
+			}).done((res)=>{
+				var data=JSON.parse(res);
+				if(!data.msg){
+					$.each(data,(i, item)=>{
+						let css=`style="background-color:#e0e9e5;color:#000"`;
+						let row=(page==1?parseInt(i)+1:(parseInt(i)+1)+(page-1)*10);
+						txt+=`<tr ${css}>
+					        <td>${row}</td>
+					        <td>${item.con_name}</td>
+					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.con_id }','${item.con_name}','${item.con_date}','${item.con_des}','${item.eq_base}','${item.eq_price}','${item.eq_discount}')" class="btn">
+				        		<i  class="fas fa-book-open fa-2x"></i>
+				        	</button>`;
+					});
+				}else{
+					txt=`<tr><td colspan='3' align="center">no data</td></tr>`;
+				}
+                let top_content=`
+                    <div class="row">
+                        <div class="col-md-12 mb-12">
+                            <center><label class="m-0 font-weight-bold text-primary " for="p_name">ข้อมูลลูกค้า</label>
+                        </div>
+                        <div class="col-md-6 mb-6">
+                            <center><label class="cv_keep-left" for="p_name"><span style="font-size:16px;font-weight: bold;">ชื่อ-นามสกุล:</span><span style="font-size:16px"> ${$_rec.c_name} ${$_rec.c_lname}</span></label>
+                        </div>
+                    </div>
+                `;
+                $("#top_content").html(top_content);
+				$("#loading").hide();
+				$("#cc_contract_content").html(txt);
+				set_pagination(filter,page);
+			});
+	}
+	function set_pagination(filter,page){
+		let start_page;
+		let end_page;
+        
+		$("#pagination").empty();
+		$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"set_pagination_cc_contract":true,
+					"filter":filter
+				}
+			}).done((res)=>{
+				var data=JSON.parse(res);
+				tmp_page=(page==="pagi_first"?1:(page=="pagi_last"?data:page));
+				if(tmp_page>5){
+					start_page=tmp_page-4;
+					end_page=tmp_page+5;
+				}else{
+					start_page=1;
+					end_page=10;
+				}
+				$("#pagination").append(`<li class="page-item " id="pagi_first"><a class="page-link" onclick="load_cc_contract('${tmp_filter}',1)"><i class="fas fa-fast-backward"></i></a></li>`);
+				for(let i=start_page;i<=data.page;i++){
+					if(i<=end_page){
+						$("#pagination").append(`<li class="page-item" id="pagi_${i}"><a class="page-link" onclick="load_cc_contract('${tmp_filter}',${i})">${i}</a></li>`);
+						if(i==page){
+							let active_page=`#pagi_${page}`;
+							$(active_page).addClass("active");
+						}
+					}
+				}
+				$("#pagination").append(`<li class="page-item " id="pagi_last"><a class="page-link" onclick="load_cc_contract('${tmp_filter}',${data})"><i class="fas fa-fast-forward"></i></a></li>`);
+			});	
+	}
+	
+</script>
+

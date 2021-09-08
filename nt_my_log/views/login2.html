@@ -1,0 +1,127 @@
+
+<body class="bg-gradient-primary" >
+
+    <div class="container">
+
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+
+            <div class="col-xl-10 col-lg-12 col-md-9">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <!-- Nested Row within Card Body -->
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4"><div id="header"></div></h1>
+                                    </div>
+                                    <form class="user" id="frm_login" enctype="multipart/form-data">
+                                        <div class="form-group">
+                                            <input type="text" class="form-control form-control-user"
+                                            id="e_username" name="e_username" oninvalid="this.setCustomValidity('รหัสพนักงาน')"required oninput="this.setCustomValidity('')" placeholder="รหัสพนักงาน">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control form-control-user"
+                                            id="e_password" name="e_password" oninvalid="this.setCustomValidity('รหัสผ่าน')"required oninput="this.setCustomValidity('')" placeholder="รหัสผ่าน">
+                                        </div>
+                                        
+                                        <button type="button" onclick="login()" class="btn btn-primary btn-user btn-block">
+                                            <i class="fas fa-sign-in-alt fa-md"></i> เข้าสู่ระบบ  
+                                        </button>
+                                        <hr>
+                                        <div id="msg">
+                                            <hr>
+                                            <h6 align="center">ระบบสำหรับจัดการข้อมูลลูกค้า <h3 align="center">และมันฟรีจึงเป็นเช่นนี้เสมอ</h3></h6>
+                                          </div>
+                                          <hr>
+                                        </div>
+                                    </form>
+                                    <hr>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+<script type="text/javascript">
+    $("#header").text(title());
+
+    $(document).on('keypress',function(e) {
+        if(e.which == 13) {
+            login();
+        }
+    });
+  function clear_input(){
+    $("#e_username").val('');
+    $("#e_password").val('');
+  }
+  function login(){
+    $("#msg").html("");
+    let sta=0;
+    if($("#e_username").val()==""){sta++;}
+    if($("#e_password").val()==""){sta++;}
+    if(sta!=0){
+      $("#frm_login").addClass("was-validated");
+      let msg=`
+              <hr>
+              <div class="alert alert-warning">
+                        <strong>คำเตือน!</strong> โปรดกรอกข้อมูลให้ครบถ้วน
+                      </div>
+              </div>`;
+      $("#msg").html(msg);
+      return false;
+    }else{
+      let f_data=new FormData();
+      let data = $("#frm_login").serializeArray();
+      $.each(data,(key,val)=>{
+        if(val.name=="e_password"){
+          let val_pass=md5(val.value);
+          let sub=4;
+          let str_pass='';
+          let txt=[];
+          let count=0;
+          let encode="";
+          let submd5=((val_pass.length)/sub);
+
+          for(let i=0;i<(val_pass.length);i++){
+            if(i%submd5==0 && i!=0){count++;str_pass='';}
+            else{str_pass+=val_pass[i];}
+            txt[count]=str_pass;
+
+          }
+          $.each(txt,(key,val)=>{
+            encode+=val.substring(0,8);
+          });
+          console.log(encode);
+          val.value=encode;
+        }
+        f_data.append(val.name,val.value);
+      });
+      f_data.append("login",true);
+      event.preventDefault();
+      $.ajax({
+        type: "POST",
+        url: link+"/login.php",
+        data: f_data,
+        contentType: false,
+        processData: false,
+      }).done((res)=> {
+        let data=JSON.parse(res);
+        if(data.status){
+          window.location.replace("?");
+        }else{
+          $("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
+        }         
+      });
+    }
+  } 
+</script>
