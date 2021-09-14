@@ -10353,31 +10353,31 @@ a:focus {
 }
 
 .sidebar-light .sidebar-brand {
-  color: #6e707e;
+  color: #2C2E43;
 }
 
 .sidebar-light hr.sidebar-divider {
-  border-top: 1px solid #eaecf4;
+  border-top: 1px solid #2C2E43;
 }
 
 .sidebar-light .sidebar-heading {
-  color: #b7b9cc;
+  color: #2C2E43;
 }
 
 .sidebar-light .nav-item .nav-link {
-  color: #858796;
+  color: #595260;
 }
 
 .sidebar-light .nav-item .nav-link i {
-  color: #d1d3e2;
+  color: #595260;
 }
 
 .sidebar-light .nav-item .nav-link:active, .sidebar-light .nav-item .nav-link:focus, .sidebar-light .nav-item .nav-link:hover {
-  color: #6e707e;
+  color: #B2B1B9;
 }
 
 .sidebar-light .nav-item .nav-link:active i, .sidebar-light .nav-item .nav-link:focus i, .sidebar-light .nav-item .nav-link:hover i {
-  color: #6e707e;
+  color: #B2B1B9;
 }
 
 .sidebar-light .nav-item .nav-link[data-toggle="collapse"]::after {

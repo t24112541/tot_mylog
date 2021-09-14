@@ -1,0 +1,301 @@
+<div id="loading" class="spinner_border text-primary" style="display:none"></div>
+<!-- Content Column -->
+<div class="d-sm-flex align-items-center justify-content-between mb-2">
+    <h1 class="h3 mb-0 text-gray-800">แผนก</h1>
+    <div class="">
+        <form class="form-inline" id="frm_search">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                </div>
+                <input id="txt_search" type="text" class="form-control" placeholder="ค้นหา..">
+                <button type="button" onclick="func_search()" class="btn btn-light">ค้นหา</button>
+            </div>
+        </form>
+    </div>    
+</div>
+<div class="row">
+    <div class="col-lg-12 mb-4">
+        <!-- Project Card  -->
+        <div class="card shadow mb-4">
+            <div class="card-header d-sm-flex align-items-center justify-content-between mb-2">
+                <h6 class="m-0 font-weight-bold text-primary">แผนก</h6>
+                <a class=" d-sm-inline-block btn btn-sm btn btn-secondary shadow-sm" onclick="open_add()" data-toggle="modal" data-target="#modal_l_department"><i class="fas fa-plus-square fa-md text-white"></i></a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>ลำดับ</th>
+                                <th>แผนก</th>
+                                <th>ดู</th>
+                            </tr>
+                        </thead>
+                        <tbody id="l_department_content"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="margin-top:10px;">
+	<ul class="pagination justify-content-center" id="pagination"></ul>
+</div>
+<div class="modal fade" id="modal_l_department" >
+    <div class="modal-dialog modal-lg" >
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header" id="head_stage">
+                <h4 class="modal-title">แผนก</h4>
+                <button type="button" onclick="clear_input()" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <form id="frm_l_department" enctype="multipart/form-data">
+                <div class="modal-body">
+
+                    <div class="col-md-12 mb-12">
+                        <label class="cv_keep-left" for="d_name">แผนก <span style="color:red">*</span></label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                            </div>
+                            <input type="hidden" name="frm_mode" id="frm_mode">
+                            <input type="text" class="form-control" id="d_name" name="d_name" oninvalid="this.setCustomValidity('แผนก')"required oninput="this.setCustomValidity('')" placeholder="แผนก">
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-12">
+                        <label class="cv_keep-left" for="d_name">เพิ่มเติม</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                            </div>
+                            <div id="hidden"></div>
+                            <textarea class="form-control" rows="5" id="d_des" name="d_des"></textarea>                        
+                        </div>
+                    </div>
+                    <div id="frm"></div>
+                    <div id="msg"></div>
+                </div>
+            
+                <!-- Modal footer -->
+                <div class="modal-footer col-sm-12" id="modal_l_department_foot">	
+                    <div id="mng"></div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+	var data;
+	var tmp_page=1;
+	var tmp_filter='';
+	// -------------------------- onload ---------------------------//
+	var link_page=link+"/l_department.php";
+	open_add();
+	load_l_department('',tmp_page);
+	$("title").text(title());
+
+	// ------------------------- function -------------------------//
+	$(document).on('keypress',function(e) {
+	    if(e.which == 13) {
+	        if($("#frm_mode").val()==2){
+	    		update();
+	    	}else{
+	    		add();
+	    	}
+	    }
+	});
+	function func_search(){
+		load_l_department($("#txt_search").val(),1);
+	}
+	$( "#frm_search" ).submit(function( event ) {
+	  func_search();
+	  event.preventDefault();
+	});
+	function open_add(){
+        $("#frm_mode").val(1);
+		clear_input();
+		let txt=`<button id="btn_save" onclick="add()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
+		$("#mng").html(txt);
+	}
+	function sh_data(d_id,d_name,d_des){
+        $("#frm_mode").val(2);
+		clear_input();
+		let txt='';
+		
+			txt=`<button id="btn_del" data-dismiss="modal" data-toggle="modal" data-target="#del_modal" type="button" class="btn btn-danger" data-dismiss=""><i class="fas fa-trash-alt fa-1x"></i> ลบ</button>
+			<button id="btn_save" onclick="update()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
+		
+		
+		let hiden=`<input type="hidden" name="d_id" id="d_id" value="${d_id}">`;
+		$("#hidden").html(hiden);
+		$("#d_name").val(d_name);
+        $("#d_des").val(d_des);
+		$("#modal_l_department").modal('toggle');
+		$("#mng").html(txt);
+	}
+	function clear_input(){
+		$("#hidden").html('');
+		$("#d_name").val('');
+        $("#d_des").val('');
+		$("#frm_l_department").removeClass("was-validated");
+	}
+	function add(){
+		$("#msg").html("");
+		let sta=0;
+		if($("#d_name").val()==""){sta++;}
+		if(sta!=0){$("#frm_l_department").addClass("was-validated");return false;}
+		else{
+			let f_data=new FormData();
+			let data = $("#frm_l_department").serializeArray();
+			$.each(data,(key,val)=>{
+				f_data.append(val.name,val.value);
+			});
+			f_data.append("l_department_add",true);
+			event.preventDefault();
+			$.ajax({
+				type: "POST",
+	 			url:link_page,
+	 			data: f_data,
+				contentType: false,
+				processData: false,
+			}).done((res)=> {
+				let data=JSON.parse(res);
+				if(data.status){
+					$("#modal_l_department").modal('toggle');
+					load_l_department('',tmp_page);
+					clear_input();
+				}else{
+					$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
+				}	 				
+	 		});
+		}
+	}	
+	function update(){
+			$("#msg").html("");
+			let f_data=new FormData();
+			let data = $("#frm_l_department").serializeArray();
+			$.each(data,(key,val)=>{
+				f_data.append(val.name,val.value);
+			});
+			f_data.append("l_department_update",true);
+			event.preventDefault();
+
+				$.ajax({
+					type: "POST",
+		 			url:link_page,
+		 			data: f_data,
+					contentType: false,
+					processData: false,
+				}).done((res)=> {
+					let data=JSON.parse(res);
+					if(data.status){
+						$("#modal_l_department").modal('toggle');
+						load_l_department(tmp_filter,tmp_page);
+						clear_input();
+					}else{
+						$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
+					}
+				});	
+	}	
+	function del(){
+			$("#msg").html("");
+			$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"d_id":$("#d_id").val(),
+					"l_department_del":true
+				}
+			}).done((res)=>{
+				let data=JSON.parse(res);
+				if(data.status){
+					// $("#modal_l_department").modal('toggle');
+					load_l_department(tmp_filter,tmp_page);
+					clear_input();
+				}else{
+					$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
+				}
+
+			});
+	}
+	function load_l_department(filter,page){
+			let txt;
+			tmp_filter=filter;
+			$("#loading").show();
+			$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"load_l_department":true,
+					"filter":filter,
+					"page":page
+				}
+			}).done((res)=>{
+				var data=JSON.parse(res);
+				console.log(data);
+				if(!data.msg){
+					$.each(data,(i, item)=>{
+						let css=`style="background-color:#e0e9e5;color:#000"`;
+						let row=(page==1?parseInt(i)+1:(parseInt(i)+1)+(page-1)*10);
+						let limit_word="";
+						for(i=0;i<25;i++){
+							if(i>=item.d_name.length){break;}
+							limit_word+=item.d_name[i];
+							if(i==24){limit_word+="...";}
+						}
+						txt+=`<tr ${css}>
+					        <td>${row}</td>
+					        <td>${limit_word} </td>
+					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.d_id }','${item.d_name}','${item.d_des}')" class="btn">
+				        		<i  class="fas fa-book-open fa-2x"></i>
+				        	</button>`;
+					});
+				}else{
+					txt=`<tr><td colspan='3'>no data</td></tr>`;
+				}
+				$("#loading").hide();
+				$("#l_department_content").html(txt);
+				set_pagination(filter,page);
+			});
+	}
+	function set_pagination(filter,page){
+		let start_page;
+		let end_page;
+		$("#pagination").empty();
+		$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"set_pagination_l_department":true,
+					"filter":filter
+				}
+			}).done((res)=>{
+				var data=JSON.parse(res);
+				tmp_page=(page==="pagi_first"?1:(page=="pagi_last"?data:page));
+				if(tmp_page>5){
+					start_page=tmp_page-4;
+					end_page=tmp_page+5;
+				}else{
+					start_page=1;
+					end_page=10;
+				}
+				$("#pagination").append(`<li class="page-item " id="pagi_first"><a class="page-link" onclick="load_l_department('${tmp_filter}',1)"><i class="fas fa-fast-backward"></i></a></li>`);
+				for(let i=start_page;i<=data;i++){
+					if(i<=end_page){
+						$("#pagination").append(`<li class="page-item" id="pagi_${i}"><a class="page-link" onclick="load_l_department('${tmp_filter}',${i})">${i}</a></li>`);
+						if(i==page){
+							let active_page=`#pagi_${page}`;
+							$(active_page).addClass("active");
+						}
+					}
+				}
+				$("#pagination").append(`<li class="page-item " id="pagi_last"><a class="page-link" onclick="load_l_department('${tmp_filter}',${data})"><i class="fas fa-fast-forward"></i></a></li>`);
+			});	
+	}
+	
+</script>
+

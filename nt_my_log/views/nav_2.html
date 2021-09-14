@@ -33,11 +33,11 @@
         
 <!-- <script src="./js/sb-admin-2.min.js"></script> -->
 <script type="text/javascript">
-	var link_page_usr=link+"/cc_employee.php";
+	var link_page_usr=link+"/l_users.php";
   var emp_id="";
   load_user();
-  $("#confirm_e_password").keyup(function(){
-        if($("#e_password").val()!=$("#confirm_e_password").val()){
+  $("#confirm_u_password").keyup(function(){
+        if($("#u_password").val()!=$("#confirm_u_password").val()){
             $("#btn_save").prop('disabled', true)
         }else{
             $("#btn_save").prop('disabled', false)
@@ -49,15 +49,15 @@
         type:"POST",
         url:link_page_usr,
         data:{
-          "load_e_name":true,
+          "load_u_name":true,
         }
       }).done((res)=>{
         var data=JSON.parse(res);
-        emp_id=data[0].e_id;
+        emp_id=data[0].u_id;
         txt=`
         
-                <a class="dropdown-item" href="#" onclick="sh_data_usr('${data[0].e_id }','${data[0].e_name}','${data[0].e_lname}','${data[0].ps_id}','${data[0].ps_name}','${data[0].e_address}','${data[0].e_tel}','${data[0].e_username}','${data[0].e_password}','${data[0].pv_id}','${data[0].pv_name}')">
-                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>${data[0].e_name} ${data[0].e_lname}
+                <a class="dropdown-item" href="#" onclick="sh_data_usr('${data[0].u_id }','${data[0].u_fullname}','${data[0].u_tel}','${data[0].p_id}','${data[0].p_name}','${data[0].u_code}','${data[0].u_password}','${data[0].pv_id}','${data[0].pv_name}','${data[0].d_id}','${data[0].d_name}')">
+                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>${data[0].u_fullname}
                 </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
@@ -65,27 +65,27 @@
                   ออกจากระบบ
                 </a>
         `;
-        load_cc_position_nav();
-        load_cc_province_nav();
+        // load_cc_position_nav();
+        // load_cc_province_nav();
         $("#user_profile").html(txt);
       });
   }
   function update_usr(){
 			$("#msg").html("");
 			let f_data=new FormData();
-			let data = $("#frm_cc_employee").serializeArray();
+			let data = $("#frm_l_users").serializeArray();
 			$.each(data,(key,val)=>{
-        // if(val.name!="pv_id_usr" || val.name!="ps_id_usr"){
-          if((val.name=="e_password" || val.name=="confirm_e_password") && val.value!="" ){
+        // if(val.name!="pv_id_usr" || val.name!="p_id_usr"){
+          if((val.name=="u_password" || val.name=="confirm_u_password") && val.value!="" ){
             val.value=re_encode(val.value);
           }
           f_data.append(val.name,val.value);
         // }
         
 			});
-			f_data.append("cc_employee_update",true);
+			f_data.append("l_users_update",true);
       f_data.append("pv_id",$("#pv_id_usr").val());
-      f_data.append("ps_id",$("#ps_id_usr").val());
+      f_data.append("p_id",$("#p_id_usr").val());
 
 			event.preventDefault();
 
@@ -98,7 +98,7 @@
 				}).done((res)=> {
 					let data=JSON.parse(res);
 					if(data.status){
-						$("#modal_cc_employee_usr").modal('toggle');
+						$("#modal_l_users_usr").modal('toggle');
 						load_user();
 						clear_input_usr();
 					}else{
@@ -119,11 +119,11 @@
 			var data=JSON.parse(res);
 			if(!data.msg){
 				$.each(data,(i, item)=>{
-					txt+=`<option value="${item.ps_id}">${item.ps_name}</option>`;
+					txt+=`<option value="${item.p_id}">${item.p_name}</option>`;
 				});
 			}
 			$("#loading").hide();
-			$("#ps_id_usr").html(txt);
+			$("#p_id_usr").html(txt);
 		});
 	}
 	function load_cc_province_nav(){
@@ -148,36 +148,36 @@
 	}
   function clear_input_usr(){
 		$("#hidden").html('');
-		$("#e_name").val('');
-    $("#e_lname").val('');
-    $("#ps_id_usr").val('');
+		$("#u_fullname").val('');
+    $("#u_tel").val('');
+    $("#p_id_usr").val('');
 		$("#pv_id_usr").val('');
 
     $("#e_address").val('');
-    $("#e_tel").val('');
-    $("#e_username").val('');
-    $("#e_password").val('');
-    $("#confirm_e_password").val('');
-		$("#frm_cc_employee").removeClass("was-validated");
+    $("#u_tel").val('');
+    $("#u_code").val('');
+    $("#u_password").val('');
+    $("#confirm_u_password").val('');
+		$("#frm_l_users").removeClass("was-validated");
     $("#msg").html('');
 	}
-  function sh_data_usr(e_id,e_name,e_lname,ps_id,ps_name,e_address,e_tel,e_username,e_password,pv_id,pv_name){
+  function sh_data_usr(u_id,u_fullname,u_tel,p_id,p_name,e_address,e_tel,u_code,u_password,pv_id,pv_name){
     
 		clear_input_usr();
 		let txt=`
     <button id="btn_del" data-dismiss="modal" data-toggle="modal" data-target="#del_modal" type="button" class="btn btn-danger" data-dismiss=""><i class="fas fa-trash-alt fa-1x"></i> ลบ</button>
 		<button id="btn_save" onclick="update_usr()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
-		let hiden=`<input type="hidden" name="e_id" id="e_id" value="${e_id}">`;
+		let hiden=`<input type="hidden" name="u_id" id="u_id" value="${u_id}">`;
 		$("#hidden").html(hiden);
-		$("#e_name").val(e_name);
-    $("#e_lname").val(e_lname);
-    $("#ps_id_usr").val(ps_id);
+		$("#u_fullname").val(u_fullname);
+    $("#u_tel").val(u_tel);
+    $("#p_id_usr").val(p_id);
 		$("#pv_id_usr").val(pv_id);
     $("#e_address").val(e_address);
     $("#e_tel").val(e_tel);
-    $("#e_username").val(e_username);
+    $("#u_code").val(u_code);
 
-		$("#modal_cc_employee_usr").modal('toggle');
+		$("#modal_l_users_usr").modal('toggle');
 		$("#mng_usr").html(txt);
 	}
   // 

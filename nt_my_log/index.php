@@ -17,11 +17,11 @@
   <link rel="stylesheet" href="./css/cv_style.css?v=1002">
   
   <!-- Custom styles for this template-->
-  <link href="./css/sb-admin-2.css?v=1001" rel="stylesheet">
+  <link href="./css/sb-admin-2.css?v=1002" rel="stylesheet">
   <script src="./js/jquery-3.4.1.js"></script>
   <!-- <script src="./js/popper.min.js"></script> -->
   <script src="./js/bootstrap.min.js"></script>
-  <script src="./js/cv_js.js?v=1010"></script>
+  <script src="./js/cv_js.js?v=1001"></script>
 </head>
 
 <body id="page-top">
@@ -60,15 +60,10 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
           <?php 
-              if(isset($_GET['cc_status'])){require_once("./views/cc_status.html");}
-              else if(isset($_GET['cc_position'])){require_once("./views/cc_position.html");}
-              else if(isset($_GET['cc_type'])){require_once("./views/cc_type.html");}
-              else if(isset($_GET['cc_employee'])){require_once("./views/cc_employee.html");}
-              else if(isset($_GET['cc_customer'])){require_once("./views/cc_customer.html");}
-              else if(isset($_GET['add_cc_contract'])){require_once("./views/cc_contract.html");}
-              else if(isset($_GET['cc_product']) || isset($_GET['add_cc_equipment'])){require_once("./views/cc_product.php");}
-              else if(isset($_GET['cc_equipment']) || isset($_GET['select_cc_equipment'])){require_once("./views/cc_equipment.php");}
-              else if(isset($_GET['cc_province'])){require_once("./views/cc_province.html");}
+              if(isset($_GET['l_department'])){require_once("./views/l_department.html");}
+              else if(isset($_GET['l_users'])){require_once("./views/l_users.html");}
+              else if(isset($_GET['l_position'])){require_once("./views/l_position.html");}
+              else if(isset($_GET['l_province'])){require_once("./views/l_province.html");}
               else if(isset($_GET['dashboard'])){require_once("./views/dashboard.html");}
               else if(isset($_GET['get_log'])){require_once("./views/log.html");}
 

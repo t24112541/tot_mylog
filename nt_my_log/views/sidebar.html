@@ -1,20 +1,16 @@
-    <ul class="navbar-nav  sidebar sidebar-dark accordion" id="accordionSidebar" style="background-color: #6483af;transition: 0.5s;">
+    <ul class="navbar-nav  sidebar sidebar-light accordion" id="accordionSidebar" style="background-color: #FFD523;transition: 0.5s;color:#2C2E43">
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="?">
         <div class="sidebar-brand-icon rotate-n-15">
-          <i class="fas fa-users"></i>
+          <i class="fas fa-book"></i>
         </div>
-        <div class="sidebar-brand-text mx-1" >Key Customers</div>
+        <div class="sidebar-brand-text mx-1" id="header"></div>
       </a>
 
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
       <a href="?customer_categories"><i class="fas "></i> </a>
-      <!-- <li class="nav-item">
-        <a class="nav-link" href="?dashboard">
-          <i class="fab fa-product-hunt"></i>
-          <span>dashboard</span></a>
-      </li> -->
+
       <!-- Heading -->
       <div class="sidebar-heading">
         ข้อมูลในระบบ
@@ -25,9 +21,9 @@
           <span>สินค้า</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="?cc_employee">
+        <a class="nav-link" href="?l_users">
           <i class="fas fa-user-tie"></i>
-          <span>ข้อมูลพนักงาน</span></a>
+          <span>ผู้ใช้</span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="?cc_customer">
@@ -41,22 +37,17 @@
       </div>
       <!-- Nav Item  -->
       <li class="nav-item">
-        <a class="nav-link" href="?cc_position">
+        <a class="nav-link" href="?l_department">
           <i class="fas fa-layer-group"></i>
-          <span>ตำแหน่งพนักงาน</span></a>
+          <span>แผนก</span></a>
       </li>
-      <!-- <li class="nav-item">
-        <a class="nav-link" href="?cc_status">
-          <i class="fas fa-fw fa-store-alt"></i>
-          <span>รายการสถานะจุดติดติั้ง</span></a>
-      </li> -->
       <li class="nav-item">
-        <a class="nav-link" href="?cc_type">
+        <a class="nav-link" href="?l_position">
           <i class="fas fa-user-friends"></i>
-          <span>ประเภทลูกค้า</span></a>
+          <span>ตำแหน่ง</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="?cc_province">
+        <a class="nav-link" href="?l_province">
           <i class="fas fa-vihara"></i>
           <span>จังหวัด</span></a>
       </li>
@@ -77,6 +68,8 @@
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
       </div>
     </ul>
-
+<script>
+  $("#header").text(title());
+</script>
 
     

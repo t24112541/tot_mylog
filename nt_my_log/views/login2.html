@@ -21,11 +21,11 @@
                                     <form class="user" id="frm_login" enctype="multipart/form-data">
                                         <div class="form-group">
                                             <input type="text" class="form-control form-control-user"
-                                            id="e_username" name="e_username" oninvalid="this.setCustomValidity('รหัสพนักงาน')"required oninput="this.setCustomValidity('')" placeholder="รหัสพนักงาน">
+                                            id="u_code" name="u_code" oninvalid="this.setCustomValidity('รหัสพนักงาน')"required oninput="this.setCustomValidity('')" placeholder="รหัสพนักงาน">
                                         </div>
                                         <div class="form-group">
                                             <input type="password" class="form-control form-control-user"
-                                            id="e_password" name="e_password" oninvalid="this.setCustomValidity('รหัสผ่าน')"required oninput="this.setCustomValidity('')" placeholder="รหัสผ่าน">
+                                            id="u_password" name="u_password" oninvalid="this.setCustomValidity('รหัสผ่าน')"required oninput="this.setCustomValidity('')" placeholder="รหัสผ่าน">
                                         </div>
                                         
                                         <button type="button" onclick="login()" class="btn btn-primary btn-user btn-block">
@@ -34,7 +34,7 @@
                                         <hr>
                                         <div id="msg">
                                             <hr>
-                                            <h6 align="center">ระบบสำหรับจัดการข้อมูลลูกค้า <h3 align="center">และมันฟรีจึงเป็นเช่นนี้เสมอ</h3></h6>
+                                            <h6 align="center">ระบบลงบันทึกการทำงานประจำวัน </h6>
                                           </div>
                                           <hr>
                                         </div>
@@ -61,14 +61,14 @@
         }
     });
   function clear_input(){
-    $("#e_username").val('');
-    $("#e_password").val('');
+    $("#u_code").val('');
+    $("#u_password").val('');
   }
   function login(){
     $("#msg").html("");
     let sta=0;
-    if($("#e_username").val()==""){sta++;}
-    if($("#e_password").val()==""){sta++;}
+    if($("#u_code").val()==""){sta++;}
+    if($("#u_password").val()==""){sta++;}
     if(sta!=0){
       $("#frm_login").addClass("was-validated");
       let msg=`
@@ -83,7 +83,7 @@
       let f_data=new FormData();
       let data = $("#frm_login").serializeArray();
       $.each(data,(key,val)=>{
-        if(val.name=="e_password"){
+        if(val.name=="u_password"){
           let val_pass=md5(val.value);
           let sub=4;
           let str_pass='';

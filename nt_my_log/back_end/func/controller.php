@@ -135,6 +135,7 @@ class controller{
 		return json_encode($data);
 	}
 	function count_rows($table,$select,$where){
+		// echo "select $select from $table $where";
 		$que=$this->conn->query("select $select from $table $where");
 		return $que->num_rows;
 	}

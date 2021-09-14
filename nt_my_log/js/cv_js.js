@@ -1,6 +1,6 @@
 
 function title(){
-	return "Key Customers";
+	return "MyLog";
 } 
 function upload(target){
 	$(target).trigger("click");
