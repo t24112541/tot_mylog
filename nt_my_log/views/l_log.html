@@ -1,0 +1,429 @@
+<div id="loading" class="spinner_border text-primary" style="display:none"></div>
+<!-- Content Column -->
+<div class="d-sm-flex align-items-center justify-content-between mb-2">
+    <h1 class="h3 mb-0 text-gray-800">My-บันทึกการทำงาน</h1>
+    <div class="">
+        <form class="form-inline" id="frm_search">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                </div>
+                <input id="txt_search" type="text" class="form-control" placeholder="ค้นหา..">
+                <button type="button" onclick="func_search()" class="btn btn-light">ค้นหา</button>
+            </div>
+        </form>
+    </div>    
+</div>
+<div class="row">
+    <div class="col-lg-12 mb-4">
+        <!-- Project Card  -->
+        <div class="card shadow mb-4">
+            <div class="card-header d-sm-flex align-items-center justify-content-between mb-2">
+                <h6 class="m-0 font-weight-bold text-primary">My-บันทึกการทำงาน</h6>
+                <a class=" d-sm-inline-block btn btn-sm btn btn-secondary shadow-sm" onclick="open_add()" data-toggle="modal" data-target="#modal_l_log"><i class="fas fa-plus-square fa-md text-white"></i></a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>ลำดับ</th>
+                                <th>วันที่</th>
+                                <th>งาน</th>
+                                <th>ดู</th>
+                            </tr>
+                        </thead>
+                        <tbody id="l_log_content"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="margin-top:10px;">
+	<ul class="pagination justify-content-center" id="pagination"></ul>
+</div>
+<div class="modal fade" id="modal_l_log" >
+    <div class="modal-dialog modal-lg" >
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header" id="head_stage">
+                <h4 class="modal-title">My-บันทึกการทำงาน</h4>
+                <button type="button" onclick="clear_input()" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            
+            <form id="frm_l_log" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row">
+						
+                        <div class="col-md-8 mb-8" id="l_title_1">
+                            <label class="cv_keep-left" for="l_title">เรื่อง <span style="color:red">*</span></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                </div>
+                                <input type="hidden" name="frm_mode" id="frm_mode">
+                                <select class="form-control" id="l_title_select" name="l_title_select" required placeholder="เรื่อง "></select>                        
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-8 mb-8" id="l_title_2" style="display:none ;">
+                                <label class="cv_keep-left" for="l_title">เรื่อง <span style="color:red">*</span></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="l_title_type" name="l_title_type" oninvalid="this.setCustomValidity('พิมพ์เรื่องที่ต้องการเพิ่ม')"required oninput="this.setCustomValidity('')" placeholder="พิมพ์เรื่องที่ต้องการเพิ่ม">
+                                </div>
+                        </div>
+
+                        <div class="col-md-4 mb-4" style="margin-top:5%">
+                                <div class="input-group">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="l_title_missing">
+                                        <label class="form-check-label" for="l_title_missing">
+                                            ไม่มีในรายการใช่มั้ย?
+                                        </label>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="col-md-12 mb-12">
+                                <label class="cv_keep-left" for="l_detail">รายละเอียด</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                    </div>
+                                    <div id="hidden"></div>
+                                    <textarea class="form-control" rows="5" id="l_detail" name="l_detail"></textarea>                        
+                                </div>
+                        </div>
+                        <div class="col-md-12 mb-12">
+                                <label class="cv_keep-left" for="lf_files">ภาพประกอบ</label>
+                                  <div class="input-group">
+                                      <div class="input-group-prepend">
+                                        <span class="input-group-text" ><i class="fas fa-images"></i></span>
+                                      </div>
+                                      <button type="button" onclick="upload('#lf_files')" class="btn">เลือกรูปภาพ</button>
+                                      <input class="form-control" type="file" onchange="img_preview(this,'sh_img')" id="lf_files" name="lf_files" class="" style="display:none">
+                                  </div>
+                        </div>
+                        <div class="col-md-12 mb-12" id="img_pre" >
+                                <label class="cv_keep-left" for="lf_files"></label>
+                                <div class="input-group">
+                                    <div align="center">
+                                        <center><img id="sh_img" class="rounded" width="50%">
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div id="frm"></div>
+                    <div id="msg"></div>
+                </div>
+            
+                <!-- Modal footer -->
+                <div class="modal-footer col-sm-12" id="modal_l_log_foot">	
+                    <div id="mng"></div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+	var data;
+	var tmp_page=1;
+	var tmp_filter='';
+    let stg_chk=0;
+	// -------------------------- onload ---------------------------//
+	var link_page=link+"/l_log.php";
+	open_add();
+	load_l_log('',tmp_page);
+	load_l_log_title();
+	// ------------------------- function -------------------------//
+       
+    $('#l_title_missing').change(function () {
+        if(stg_chk%2==1){
+            $("#l_title_1").show();
+            $("#l_title_2").hide();
+        }else{
+            console.log("check");
+            $("#l_title_1").hide();
+            $("#l_title_2").show();
+        }
+        stg_chk++;
+    });
+
+	$(document).on('keypress',function(e) {
+        
+	    if(e.which == 13) {
+            
+	        if($("#frm_mode").val()==2){
+	    		update();
+	    	}
+            else{
+	    		add();
+	    	}
+	    }
+        
+	});
+    $("#txt_search").keyup(function(){
+        $("#frm_mode").val(3);
+    });
+    
+	function func_search(){
+		load_l_log($("#txt_search").val(),tmp_page);
+	}
+	$("#frm_search" ).submit(function( event ) {
+	  func_search();
+	  event.preventDefault();
+	});
+	function open_add(){
+        $("#frm_mode").val(1);
+		clear_input();
+		let txt=`<button id="btn_save" onclick="add()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
+		$("#mng").html(txt);
+	}
+	function sh_data(l_id,l_title,l_detail,lf_file,la_date,la_comment,u_fullname){
+      
+        $("#frm_mode").val(2);
+		clear_input();
+		let txt='';
+
+			txt=`<button id="btn_del" data-dismiss="modal" data-toggle="modal" data-target="#del_modal" type="button" class="btn btn-danger" data-dismiss=""><i class="fas fa-trash-alt fa-1x"></i> ลบ</button>
+			<button id="btn_save" onclick="update()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
+			
+		
+		let hiden=`<input type="hidden" name="l_id" id="l_id" value="${l_id}">`;
+
+		let la_comment_out=`<textarea class="form-control" rows="5" >${la_comment}</textarea>`;
+		let img='';
+		for(i=4;i<lf_file.length;i++){
+			img+=lf_file[i];
+		}
+
+		$("#hidden").html(hiden);
+		$("#l_title_select").val(l_title );
+		$("#l_detail").val(l_detail);
+        $("#lf_file").val(lf_file);
+		$("#sh_img").attr('src',img);
+		
+		$("#la_date").val(la_date);
+        $("#la_comment").val(la_comment_out);
+        $("#u_fullname").val(u_fullname);
+		
+		$("#modal_l_log").modal('toggle');
+		$("#mng").html(txt);
+	}
+	function clear_input(){
+		$("#hidden").html('');
+		$("#l_title_select").val('');
+		$("#l_title_type").val('');
+        $("#l_detail").val('');
+		$("#sh_img").attr('src','');
+		$("#frm_l_log").removeClass("was-validated");
+        $("#msg").html('');
+	}
+	function add(){
+		$("#msg").html("");
+        let sta=0;
+        let l_title="";
+        let files = $("#lf_files")[0].files[0]; 
+        if($("#l_title_type").val()!=""){
+            l_title=$("#l_title_type").val();
+        }else{
+            l_title=$("#l_title_select").val();
+        }
+        
+		
+		if(sta!=0){$("#frm_l_log").addClass("was-validated");return false;}
+		else{
+			let f_data=new FormData();
+			let data = $("#frm_l_log").serializeArray();
+			$.each(data,(key,val)=>{
+				if(val.name!="l_title_type" && val.name!="l_title_select"){
+					f_data.append(val.name,val.value);
+				}
+			});
+            f_data.append("l_log_add",true);
+            f_data.append("lf_file",files);
+            f_data.append("l_title",l_title);
+			event.preventDefault();
+			$.ajax({
+				type: "POST",
+	 			url:link_page,
+	 			data: f_data,
+				contentType: false,
+				processData: false,
+			}).done((res)=> {
+				let data=JSON.parse(res);
+				if(data.status){
+					$("#modal_l_log").modal('toggle');
+					load_l_log('',tmp_page);
+					clear_input();
+				}else{
+					$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
+				}	 				
+	 		});
+		}
+	}	
+	function update(){
+			$("#msg").html("");
+			let f_data=new FormData();
+			let data = $("#frm_l_log").serializeArray();
+			let l_title="";
+			let files = $("#lf_files")[0].files[0]; 
+			if($("#l_title_type").val()!=""){
+				l_title=$("#l_title_type").val();
+			}else{
+				l_title=$("#l_title_select").val();
+			}
+			$.each(data,(key,val)=>{
+				if(val.name!="l_title_type" && val.name!="l_title_select"){
+					f_data.append(val.name,val.value);
+				}
+			});
+			f_data.append("l_log_update",true);
+			f_data.append("lf_files",files);
+            f_data.append("l_title",l_title);
+			event.preventDefault();
+
+				$.ajax({
+					type: "POST",
+		 			url:link_page,
+		 			data: f_data,
+					contentType: false,
+					processData: false,
+				}).done((res)=> {
+					let data=JSON.parse(res);
+					if(data.status){
+						$("#modal_l_log").modal('toggle');
+						load_l_log(tmp_filter,tmp_page);
+						clear_input();
+					}else{
+						$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
+					}
+				});	
+	}	
+	function del(){
+			$("#msg").html("");
+			$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"l_id":$("#l_id").val(),
+					"l_log_del":true
+				}
+			}).done((res)=>{
+				let data=JSON.parse(res);
+				if(data.status){
+					// $("#modal_l_log").modal('toggle');
+					load_l_log(tmp_filter,tmp_page);
+					clear_input();
+				}else{
+					$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
+				}
+
+			});
+	}
+	function load_l_log(filter,page){
+        
+			let txt;
+			tmp_filter=filter;
+			$("#loading").show();
+			$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"load_l_log":true,
+					"filter":filter,
+					"page":page
+				}
+			}).done((res)=>{
+				var data=JSON.parse(res);
+				if(!data.msg){
+					$.each(data,(i, item)=>{
+						// console.log(data[i]);
+						let css=`style="background-color:#e0e9e5;color:#000"`;
+						let row=(page==1?parseInt(i)+1:(parseInt(i)+1)+(page-1)*10);
+						let limit_word="";
+						
+						txt+=`<tr ${css}>
+					        <td>${row}</td>
+							<td>${item.l_date }</td>
+					        <td>${item.l_title }</td>
+
+					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.l_id}','${item.l_title}','${item.l_detail}','${item.lf_file}','${item.la_date}','${item.la_comment}','${item.u_fullname}',)" class="btn">
+				        		<i  class="fas fa-book-open fa-2x"></i>
+				        	</button>`;
+					});
+				}else{
+					txt=`<tr><td colspan='3' align="center">no data</td></tr>`;
+				}
+				$("#loading").hide();
+				$("#l_log_content").html(txt);
+				set_pagination(filter,page);
+			});
+	}
+	function load_l_log_title(){
+		let txt=`<option value="0" selected disabled>เลือกหัวข้องาน</option>`;
+		$("#loading").show();
+		$.ajax({
+			type:"POST",
+			url:link+"/l_log.php",
+			data:{
+				"load_l_log_title":true,
+			}
+		}).done((res)=>{
+			var data=JSON.parse(res);
+			if(!data.msg){
+				$.each(data,(i, item)=>{
+					txt+=`<option value="${item.l_title}">${item.l_title}</option>`;
+				});
+			}
+			$("#loading").hide();
+			$("#l_title_select").html(txt);
+		});
+	}
+    
+	function set_pagination(filter,page){
+		let start_page;
+		let end_page;
+        
+		$("#pagination").empty();
+		$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"set_pagination_l_log":true,
+					"filter":filter
+				}
+			}).done((res)=>{
+				var data=JSON.parse(res);
+				tmp_page=(page==="pagi_first"?1:(page=="pagi_last"?data:page));
+				if(tmp_page>5){
+					start_page=tmp_page-4;
+					end_page=tmp_page+5;
+				}else{
+					start_page=1;
+					end_page=10;
+				}
+				$("#pagination").append(`<li class="page-item " id="pagi_first"><a class="page-link" onclick="load_l_log('${tmp_filter}',1)"><i class="fas fa-fast-backward"></i></a></li>`);
+				for(let i=start_page;i<=data.page;i++){
+					if(i<=end_page){
+						$("#pagination").append(`<li class="page-item" id="pagi_${i}"><a class="page-link" onclick="load_l_log('${tmp_filter}',${i})">${i}</a></li>`);
+						if(i==page){
+							let active_page=`#pagi_${page}`;
+							$(active_page).addClass("active");
+						}
+					}
+				}
+				$("#pagination").append(`<li class="page-item " id="pagi_last"><a class="page-link" onclick="load_l_log('${tmp_filter}',${data})"><i class="fas fa-fast-forward"></i></a></li>`);
+			});	
+	}
+	
+</script>
+

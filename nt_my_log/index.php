@@ -64,6 +64,7 @@
               else if(isset($_GET['l_users'])){require_once("./views/l_users.html");}
               else if(isset($_GET['l_position'])){require_once("./views/l_position.html");}
               else if(isset($_GET['l_province'])){require_once("./views/l_province.html");}
+              else if(isset($_GET['l_log'])){require_once("./views/l_log.html");}
               else if(isset($_GET['dashboard'])){require_once("./views/dashboard.html");}
               else if(isset($_GET['get_log'])){require_once("./views/log.html");}
 
