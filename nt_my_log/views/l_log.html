@@ -105,7 +105,7 @@
                                         <span class="input-group-text" ><i class="fas fa-images"></i></span>
                                       </div>
                                       <button type="button" onclick="upload('#lf_files')" class="btn">เลือกรูปภาพ</button>
-                                      <input class="form-control" type="file" onchange="img_preview(this,'sh_img')" id="lf_files" name="lf_files" class="" style="display:none">
+                                      <input class="form-control" type="file" onchange="img_preview(this,'sh_img',this)" id="lf_files" name="lf_files" class="" style="display:none">
                                   </div>
                         </div>
                         <div class="col-md-12 mb-12" id="img_pre" >
@@ -187,7 +187,7 @@
 		let txt=`<button id="btn_save" onclick="add()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
 		$("#mng").html(txt);
 	}
-	function sh_data(l_id,l_title,l_detail,lf_file,la_date,la_comment,u_fullname){
+	function sh_data(l_id,l_title,l_detail,lf_file,la_date,la_comment,u_fullname,lf_id){
       
         $("#frm_mode").val(2);
 		clear_input();
@@ -197,7 +197,9 @@
 			<button id="btn_save" onclick="update()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
 			
 		
-		let hiden=`<input type="hidden" name="l_id" id="l_id" value="${l_id}">`;
+		let hiden=`	<input type="hidden" name="l_id" id="l_id" value="${l_id}">
+					<input type="hidden" name="lf_id" id="lf_id" value="${lf_id}">
+					<input type="hidden" name="hidd_lf_file" id="hidd_lf_file" value="${lf_file}">`;
 
 		let la_comment_out=`<textarea class="form-control" rows="5" >${la_comment}</textarea>`;
 		let img='';
@@ -208,7 +210,7 @@
 		$("#hidden").html(hiden);
 		$("#l_title_select").val(l_title );
 		$("#l_detail").val(l_detail);
-        $("#lf_file").val(lf_file);
+
 		$("#sh_img").attr('src',img);
 		
 		$("#la_date").val(la_date);
@@ -222,6 +224,7 @@
 		$("#hidden").html('');
 		$("#l_title_select").val('');
 		$("#l_title_type").val('');
+		$("#l_title_missing").val('');
         $("#l_detail").val('');
 		$("#sh_img").attr('src','');
 		$("#frm_l_log").removeClass("was-validated");
@@ -275,6 +278,7 @@
 			let f_data=new FormData();
 			let data = $("#frm_l_log").serializeArray();
 			let l_title="";
+
 			let files = $("#lf_files")[0].files[0]; 
 			if($("#l_title_type").val()!=""){
 				l_title=$("#l_title_type").val();
@@ -287,10 +291,9 @@
 				}
 			});
 			f_data.append("l_log_update",true);
-			f_data.append("lf_files",files);
+			f_data.append("lf_file",files);
             f_data.append("l_title",l_title);
 			event.preventDefault();
-
 				$.ajax({
 					type: "POST",
 		 			url:link_page,
@@ -356,7 +359,7 @@
 							<td>${item.l_date }</td>
 					        <td>${item.l_title }</td>
 
-					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.l_id}','${item.l_title}','${item.l_detail}','${item.lf_file}','${item.la_date}','${item.la_comment}','${item.u_fullname}',)" class="btn">
+					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.l_id}','${item.l_title}','${item.l_detail}','${item.lf_file}','${item.la_date}','${item.la_comment}','${item.u_fullname}','${item.lf_id}')" class="btn">
 				        		<i  class="fas fa-book-open fa-2x"></i>
 				        	</button>`;
 					});

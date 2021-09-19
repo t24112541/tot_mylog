@@ -11,9 +11,23 @@
 		} 
 		$start=($page-1)*$perpage;
 		if(isset($_POST['filter']) && $_POST['filter']!=""){
-			$option="where l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id && l_title like '%{$_POST['filter']}%' ";
+			$option="where l_log.u_id=l_users.u_id && l_users.u_id={$_SESSION['usr']} && l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id && l_title like '%{$_POST['filter']}%' ";
 		}else{
-			$option="where l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id ORDER BY
+			$option="where l_log.u_id=l_users.u_id && l_users.u_id={$_SESSION['usr']} && l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id ORDER BY
+            l_log.l_id DESC  limit {$start},{$perpage}";
+		}
+		echo $db->select("l_log,l_log_files,l_log_approve,l_users","*",$option);
+    }else if(isset($_POST['load_l_log_all'])){
+		if(isset($_POST['page'])){
+			$page=$_POST['page'];
+		}else{
+			$page=1;
+		} 
+		$start=($page-1)*$perpage;
+		if(isset($_POST['filter']) && $_POST['filter']!=""){
+			$option="where  l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id && l_title like '%{$_POST['filter']}%' ";
+		}else{
+			$option="where  l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id ORDER BY
             l_log.l_id DESC  limit {$start},{$perpage}";
 		}
 		echo $db->select("l_log,l_log_files,l_log_approve","*",$option);
@@ -23,39 +37,36 @@
 		echo $db->select("l_log",$select,$option);
 	}
     else if(isset($_POST['l_log_add'])){
-
         $fields="";
 		$data="";
-
 		$fields_convert="";
         $data_convert="";
-
-        
-
 		foreach ($_POST as $key => $value) {
             if($key!="frm_mode" && $value!="" && $key!="hidden"  && $key!="frm_l_log" && $key!="l_log_add" && $key!="lf_file"){
 				$fields.="$key,";
                 $data.="\"{$value}\",";
-                
-
 			}
         }
-		for($i=0;$i<strlen($fields)-1;$i++){
-			$fields_convert.= $fields[$i];
-		}
-		for($i=0;$i<strlen($data)-1;$i++){
-			$data_convert.= $data[$i];
-		}
+		// for($i=0;$i<strlen($fields)-1;$i++){
+			$fields_convert= $fields;
+		// }
+		// for($i=0;$i<strlen($data)-1;$i++){
+			$data_convert= $data;
+		// }
+		$fields_convert.="u_id";
+		$data_convert.=$_SESSION['usr'];
         $res=json_decode($db->insert("l_log",$fields_convert,$data_convert));
 		$log_data=$data_convert;
 		$db->log($_SESSION['name'],"add l_log",$log_data); 
 		if($res->status){
 
             $lf_files="";
-            if(isset($_FILES) && $_FILES['lf_files']['name']!=''){
-                $filename = "../../img/".date("yy-m-d_His").".jpg";
-                if(move_uploaded_file($_FILES['lf_files']["tmp_name"], $filename)){
-                    $lf_files=$filename;
+            if(isset($_FILES) && $_FILES['lf_file']['name']!=''){
+				// $filename = resize_image("../../img/".date("Y-m-d_His").".jpg", 200, 200);
+				$filename = "../../img/".date("Y-m-d_His").".jpg";
+				// $db->get_arr($_FILES['lf_file']);
+                if(move_uploaded_file($_FILES['lf_file']["tmp_name"], $filename)){
+					$lf_files=$filename;
                 }
             }
     
@@ -73,21 +84,49 @@
         
 
 	}else if(isset($_POST['l_log_update'])){
-	    echo $db->update("l_log","l_title='{$_POST['l_title']}',con_des='{$_POST['con_des']}'con_date='{$_POST['con_date']}'","con_id='{$_POST['con_id']}'");
-		$db->log($_SESSION['name'],"edit l_log","con_id='{$_POST['con_id']}' l_title='{$_POST['l_title']}',con_des='{$_POST['con_des']}'con_date='{$_POST['con_date']}'"); 
-
+	    $data="";
+		$data_convert="";
+		$update="";
+		foreach ($_POST as $key => $value) {
+            if($key!="frm_mode" && $value!="" && $key!="hidden"  && $key!="frm_l_log" && $key!="l_log_update" && $key!="lf_files" && $key!="hidd_lf_file" && $key!="lf_id"){
+				$data.="$key=\"{$value}\",";
+			}
+		}
+		for($i=0;$i<strlen($data)-1;$i++){
+			$data_convert.= $data[$i];
+		}
+		// echo $data_convert;
+		$data=json_decode($db->update("l_log",$data_convert,"l_id='{$_POST['l_id']}'"));
+		$log_data=$data_convert;
+		$db->log($_SESSION['name'],"edit l_log",$log_data); 
+		if($data->status){
+			
+			$lf_files=$_POST['hidd_lf_file'];
+			if(isset($_FILES) && $_FILES['lf_file']['name']!=''){
+				// $filename = resize_image("../../img/".date("Y-m-d_His").".jpg", 200, 200);
+				$filename = "../../img/".date("Y-m-d_His").".jpg";
+				// $db->get_arr($_FILES['lf_file']);
+                if(move_uploaded_file($_FILES['lf_file']["tmp_name"], $filename)){
+					$lf_files=$filename;
+                }
+            }
+			$fields_l_log_files="lf_file='{$lf_files}'";
+			echo $db->update("l_log_files",$fields_l_log_files,"lf_id='{$_POST['lf_id']}'");
+		}else{
+			echo json_encode($data);
+		}
 	}else if(isset($_POST['l_log_del'])){
-		echo $db->delete("l_log","con_id='{$_POST['con_id']}'");
-		$db->log($_SESSION['name'],"remove l_log","con_id='{$_POST['con_id']}' "); 
+		echo $db->delete("l_log","l_id='{$_POST['l_id']}'");
+		$db->log($_SESSION['name'],"remove l_log","l_id='{$_POST['l_id']}' "); 
 
 	}else if(isset($_POST['set_pagination_l_log'])){
 		if(isset($_POST['filter']) && $_POST['filter']!=""){
-			$where="where l_title like '%{$_POST['filter']}%' ";
+			$where="where l_log.u_id=i_users.u_id && l_users.u_id={$_SESSION['usr']} && l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id && l_title like '%{$_POST['filter']}%'";
 		}else{
-			$where="where 1 ";
+			$where="l_log.u_id=i_users.u_id && l_users.u_id={$_SESSION['usr']} && l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id ";
 		}
 
-		$total_page=ceil($db->count_rows("l_log","*",$where)/$perpage);
+		$total_page=ceil($db->count_rows("l_log,l_log_files,l_log_approve,l_users","*",$where)/$perpage);
         $res=[
             "page"=>$total_page
         ];
@@ -97,15 +136,15 @@
         $data['total_base']=[];
         $data['benefit']=[];
 
-        $con_id=$_POST['con_id'];
+        $l_id=$_POST['l_id'];
         $table="cc_equipment,l_log";
         $select="(eq_price-(eq_price*(eq_discount/100))) AS total_pay";
-        $option="where cc_equipment.con_id=l_log.con_id && l_log.con_id = {$con_id}";
+        $option="where cc_equipment.l_id=l_log.l_id && l_log.l_id = {$l_id}";
         $data_total_pay=json_decode($db->select($table,$select,$option));
 
 		$table="cc_equipment,l_log";
         $select="eq_base";
-        $option="where cc_equipment.con_id=l_log.con_id && l_log.con_id = {$con_id}";
+        $option="where cc_equipment.l_id=l_log.l_id && l_log.l_id = {$l_id}";
         $data_eq_base=json_decode($db->select($table,$select,$option));
 
 		$sum_money=0;
