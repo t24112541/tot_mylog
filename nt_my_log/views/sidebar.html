@@ -9,57 +9,7 @@
 
       <!-- Divider -->
       <hr class="sidebar-divider my-0">
-      <a href="?customer_categories"><i class="fas "></i> </a>
-
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        ข้อมูลในระบบ
-      </div>
-      <li class="nav-item">
-        <a class="nav-link" href="?cc_product">
-          <i class="fab fa-product-hunt"></i>
-          <span>สินค้า</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="?l_users">
-          <i class="fas fa-user-tie"></i>
-          <span>ผู้ใช้</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="?l_log">
-          <i class="fas fa-user-alt"></i>
-          <span>My-บันทึกการทำงาน</span></a>
-      </li>
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-      <div class="sidebar-heading">
-        ข้อมูลสำหรับใช้งานในระบบ
-      </div>
-      <!-- Nav Item  -->
-      <li class="nav-item">
-        <a class="nav-link" href="?l_department">
-          <i class="fas fa-layer-group"></i>
-          <span>แผนก</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="?l_position">
-          <i class="fas fa-user-friends"></i>
-          <span>ตำแหน่ง</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="?l_province">
-          <i class="fas fa-vihara"></i>
-          <span>จังหวัด</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="?get_log">
-          <i class="fas fa-vihara"></i>
-          <span>log</span></a>
-      </li>
-      
-      
-
-      
+      <div id="log_menu"></div>
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">
 
@@ -70,6 +20,132 @@
     </ul>
 <script>
   $("#header").text(title());
+  
+  let l_menu='';
+
+  let link_page_prio=link+"/priority_check.php";
+  priority_check();
+  var priority=3;
+  function priority_check(){
+    $.ajax({
+				type:"POST",
+				url:link_page_prio,
+				data:{
+					"priority_check":true,
+				}
+			}).done((res_prio)=>{
+				var data_prio=JSON.parse(res_prio);
+        // console.log(data_prio);
+        priority=data_prio;
+        create_menu();
+			});	
+  }
+  function create_menu(){
+    // console.log("create_menu");
+    if(priority>=2){
+      l_menu=`
+      <!-- Heading -->
+        <hr class="sidebar-divider">
+        <li class="nav-item">
+          <a class="nav-link" href="?l_log">
+            <i class="fas fa-user-alt"></i>
+            <span>My-บันทึกการทำงาน</span></a>
+        </li>
+        <!-- Divider -->
+
+        
+    `;
+    }else if(priority>=1){
+      l_menu=`
+      <!-- Heading -->
+      <hr class="sidebar-divider">
+        <div class="sidebar-heading">
+          ข้อมูลในระบบ
+        </div>
+        <li class="nav-item">
+          <a class="nav-link" href="?l_log_employee">
+            <i class="fas fa-user-tie"></i>
+            <span>ตรวจบันทึกประจำวัน</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?l_users">
+            <i class="fas fa-user-tie"></i>
+            <span>ผู้ใช้</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?l_position">
+            <i class="fas fa-user-friends"></i>
+            <span>ตำแหน่ง</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?l_log">
+            <i class="fas fa-user-alt"></i>
+            <span>My-บันทึกการทำงาน</span></a>
+        </li>
+        <!-- Divider -->
+
+        
+    `;
+    }else if(priority==0){
+      l_menu=`
+      <!-- Heading -->
+        <div class="sidebar-heading">
+          ข้อมูลในระบบ
+        </div>
+        <li class="nav-item">
+          <a class="nav-link" href="?cc_product">
+            <i class="fab fa-product-hunt"></i>
+            <span>สินค้า</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?l_log_employee">
+            <i class="fas fa-user-tie"></i>
+            <span>ตรวจบันทึกประจำวัน</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?l_users">
+            <i class="fas fa-user-tie"></i>
+            <span>ผู้ใช้</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?l_log">
+            <i class="fas fa-user-alt"></i>
+            <span>My-บันทึกการทำงาน</span></a>
+        </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+        <div class="sidebar-heading">
+          ข้อมูลสำหรับใช้งานในระบบ
+        </div>
+        <!-- Nav Item  -->
+        <li class="nav-item">
+          <a class="nav-link" href="?l_department">
+            <i class="fas fa-layer-group"></i>
+            <span>แผนก</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?l_position">
+            <i class="fas fa-user-friends"></i>
+            <span>ตำแหน่ง</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?l_province">
+            <i class="fas fa-vihara"></i>
+            <span>จังหวัด</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?get_log">
+            <i class="fas fa-vihara"></i>
+            <span>log</span></a>
+        </li>
+    `;
+    }
+    // console.log(priority);
+    $("#log_menu").html(l_menu);
+  }
+  
+  
+  
 </script>
 
     

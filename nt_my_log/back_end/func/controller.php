@@ -35,7 +35,24 @@ class controller{
 		return json_encode($res);
 	}
 	function login($user,$pass){
-			$que=$this->conn->query("select * from l_users where u_code='{$user}' && u_password='{$pass}'");
+			$que=$this->conn->query("SELECT
+				*
+			FROM
+				l_position
+			INNER JOIN
+				l_users
+			ON 
+				l_position.p_id = l_users.p_id
+			INNER JOIN
+				l_department
+			ON 
+				l_department.d_id = l_users.d_id
+			INNER JOIN
+				l_province
+			ON 
+				l_users.pv_id = l_province.pv_id
+			where u_code='{$user}' && u_password='{$pass}' ");
+
 			if($que->num_rows==1){
 				$sh=$que->fetch_assoc();
 
@@ -45,6 +62,8 @@ class controller{
 					"usr"=>$sh['u_id'],
 					"name"=>$sh['u_fullname'],
 					"pv_id"=>$sh['pv_id'],
+					"p_priority"=>$sh['p_priority'],
+					"d_id"=>$sh['d_id'],
 				];
 				
 			}else{

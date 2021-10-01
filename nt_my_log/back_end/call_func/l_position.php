@@ -13,7 +13,7 @@
 		if(isset($_POST['filter']) && $_POST['filter']!=""){
 			$option="where p_id like '%{$_POST['filter']}%' || p_name like '%{$_POST['filter']}%' || p_des like '%{$_POST['filter']}%'";
 		}else{
-			$option="where 1 limit {$start},{$perpage}";
+			$option="where p_priority>='{$_SESSION['p_priority']}' limit {$start},{$perpage}";
 		}
 		echo $db->select("l_position","*",$option);
 	}else if(isset($_POST['load_l_position_detail'])){
@@ -40,7 +40,7 @@
 		if(isset($_POST['filter']) && $_POST['filter']!=""){
 			$where="where l_position = '{$_POST['filter']}' || p_name like '%{$_POST['filter']}%' || p_des like '%{$_POST['filter']}%' ";
 		}else{
-			$where="where 1 ";
+			$where="where p_priority>='{$_SESSION['p_priority']}' ";
 		}
 
 		$total_page=ceil($db->count_rows("l_position","*",$where)/$perpage);

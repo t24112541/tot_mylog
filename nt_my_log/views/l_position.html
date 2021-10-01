@@ -107,7 +107,7 @@
 	var tmp_page=1;
 	var tmp_filter='';
 	// -------------------------- onload ---------------------------//
-    console.log(link);
+    // console.log(link);
 	var link_page=link+"/l_position.php";
 	open_add();
 	load_l_position('',tmp_page);
@@ -144,7 +144,6 @@
 		
 			txt=`<button id="btn_del" data-dismiss="modal" data-toggle="modal" data-target="#del_modal" type="button" class="btn btn-danger" data-dismiss=""><i class="fas fa-trash-alt fa-1x"></i> ลบ</button>
 			<button id="btn_save" onclick="update()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
-		
 		
 		let hiden=`<input type="hidden" name="p_id" id="p_id" value="${p_id}">`;
 		$("#hidden").html(hiden);
@@ -254,7 +253,7 @@
 				}
 			}).done((res)=>{
 				var data=JSON.parse(res);
-				console.log(data);
+				// console.log(data);
 				if(!data.msg){
 					$.each(data,(i, item)=>{
 						let css=`style="background-color:#e0e9e5;color:#000"`;

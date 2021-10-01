@@ -22,6 +22,7 @@
   <!-- <script src="./js/popper.min.js"></script> -->
   <script src="./js/bootstrap.min.js"></script>
   <script src="./js/cv_js.js?v=1010"></script>
+  <script src="./js/jquery-image-upload-resizer.js"></script>
 </head>
 
 <body id="page-top">
@@ -67,26 +68,27 @@
               else if(isset($_GET['l_log'])){require_once("./views/l_log.html");}
               else if(isset($_GET['dashboard'])){require_once("./views/dashboard.html");}
               else if(isset($_GET['get_log'])){require_once("./views/log.html");}
-
+              else if(isset($_GET['l_log_employee'])){require_once("./views/l_log_employee.html");}
               else if(isset($_GET['logout'])){
                 session_destroy();
                 echo "<meta http-equiv='refresh' content='0;url=?'>";
               }else{
-                require_once("./views/dashboard.html");
+                if($_SESSION['p_priority']>=2){
+                  require_once("./views/l_log.html");
+                }else if($_SESSION['p_priority']>=1){
+                  require_once("./views/l_log_employee.html");
+                }else if($_SESSION['p_priority']==0){
+                  require_once("./views/l_log_employee.html");
+                }
+                
               }
-              
             ?>
         </div>
         <!-- /.container-fluid -->
-
       </div>
       <!-- End of Main Content -->
-
-
-
     </div>
     <!-- End of Content Wrapper -->
-
   </div>
   <!-- End of Page Wrapper -->
   <?php }else{require_once("./views/login2.html");}?>

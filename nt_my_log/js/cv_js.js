@@ -11,6 +11,9 @@ function img_preview(img,target){
 		document.getElementById(target).src=reader.result;
 	}
 	reader.readAsDataURL(img.files[0]);
+
+
+	
 }
 function chk_date(date){
 	// console.log(date);

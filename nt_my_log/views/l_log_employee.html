@@ -1,7 +1,7 @@
 <div id="loading" class="spinner_border text-primary" style="display:none"></div>
 <!-- Content Column -->
 <div class="d-sm-flex align-items-center justify-content-between mb-2">
-    <h1 class="h3 mb-0 text-gray-800">My-บันทึกการทำงาน</h1>
+    <h1 class="h3 mb-0 text-gray-800">บันทึกการทำงานที่ต้องตรวจ</h1>
     <div class="">
         <form class="form-inline" id="frm_search">
             <div class="input-group">
@@ -14,13 +14,15 @@
         </form>
     </div>    
 </div>
+<div class="d-sm-flex align-items-center justify-content-between mb-2" id="mode_data">
+    
+</div>
 <div class="row">
     <div class="col-lg-12 mb-4">
         <!-- Project Card  -->
         <div class="card shadow mb-4">
             <div class="card-header d-sm-flex align-items-center justify-content-between mb-2">
-                <h6 class="m-0 font-weight-bold text-primary">My-บันทึกการทำงาน</h6>
-                <a class=" d-sm-inline-block btn btn-sm btn btn-secondary shadow-sm" onclick="open_add()" data-toggle="modal" data-target="#modal_l_log"><i class="fas fa-plus-square fa-md text-white"></i></a>
+                <h6 class="m-0 font-weight-bold text-primary">บันทึกการทำงานที่ต้องตรวจ</h6>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -28,7 +30,9 @@
                         <thead>
                             <tr>
                                 <th>ลำดับ</th>
-                                <th>วันที่</th>
+								<th>วันที่</th>
+								<th>ศูนย์</th>
+                                <th>ผู้ปฏิบัติงาน</th>
                                 <th>งาน</th>
                                 <th>ดู</th>
                             </tr>
@@ -48,17 +52,20 @@
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header" id="head_stage">
-                <h4 class="modal-title">My-บันทึกการทำงาน</h4>
+                <h4 class="modal-title">บันทึกการทำงานของพนักงาน</h4>
                 <button type="button" onclick="clear_input()" class="close" data-dismiss="modal">&times;</button>
             </div>
             <!-- Modal body -->
             
             <form id="frm_l_log" enctype="multipart/form-data">
                 <div class="modal-body">
+						<div class="row" id="l_user_detail">
+							
+						</div>
                     <div class="row">
 						
-                        <div class="col-md-8 mb-8" id="l_title_1">
-                            <label class="cv_keep-left" for="l_title">เรื่อง <span style="color:red">*</span></label>
+                        <div class="col-md-12 mb-12" id="l_title_1">
+                            <label class="cv_keep-left" for="l_title">เรื่อง </label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" ><i class="fas fa-tags"></i></span>
@@ -68,8 +75,8 @@
                             </div>
                         </div>
                         
-                        <div class="col-md-8 mb-8" id="l_title_2" style="display:none ;">
-                                <label class="cv_keep-left" for="l_title">เรื่อง <span style="color:red">*</span></label>
+                        <div class="col-md-12 mb-12" id="l_title_2" style="display:none ;">
+                                <label class="cv_keep-left" for="l_title">เรื่อง </label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" ><i class="fas fa-tags"></i></span>
@@ -78,16 +85,7 @@
                                 </div>
                         </div>
 
-                        <div class="col-md-4 mb-4" style="margin-top:5%">
-                                <div class="input-group">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="l_title_missing">
-                                        <label class="form-check-label" for="l_title_missing">
-                                            ไม่มีในรายการใช่มั้ย?
-                                        </label>
-                                    </div>
-                                </div>
-                        </div>
+                       
                         <div class="col-md-12 mb-12">
                                 <label class="cv_keep-left" for="l_detail">รายละเอียด</label>
                                 <div class="input-group">
@@ -116,6 +114,16 @@
                                     </div>
                                 </div>
                         </div>
+                        <div class="col-md-12 mb-12">
+                            <label class="cv_keep-left" for="la_comment">คอมเมนต์ถึงผู้ปฏิบัติงาน</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                </div>
+                                
+                                <textarea class="form-control" rows="5" id="la_comment" name="la_comment"></textarea>                        
+                            </div>
+                        </div>
                     </div>
                     
                     
@@ -138,10 +146,10 @@
 	var tmp_page=1;
 	var tmp_filter='';
     let stg_chk=0;
+	let tmp_mode_data;
 	// -------------------------- onload ---------------------------//
 	var link_page=link+"/l_log.php";
-	open_add();
-	load_l_log('',tmp_page);
+	load_l_log('',tmp_page,'');
 	load_l_log_title();
 	// ------------------------- function -------------------------//
 	$('#lf_files').imageUploadResizer({
@@ -184,38 +192,76 @@
     });
     
 	function func_search(){
-		load_l_log($("#txt_search").val(),tmp_page);
+		load_l_log($("#txt_search").val(),tmp_page,'');
 	}
 	$("#frm_search" ).submit(function( event ) {
 	  func_search();
 	  event.preventDefault();
 	});
-	function open_add(){
-        $("#frm_mode").val(1);
-		clear_input();
-		let txt=`<button id="btn_save" onclick="add()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
-		$("#mng").html(txt);
-	}
-	function sh_data(l_id,l_title,l_detail,lf_file,la_date,la_comment,u_fullname,lf_id){
+	
+	function sh_data(l_id,l_title,l_detail,lf_file,la_date,la_comment,u_fullname,p_name,d_name,l_date){
       
         $("#frm_mode").val(2);
 		clear_input();
 		let txt='';
 
-			txt=`<button id="btn_del" data-dismiss="modal" data-toggle="modal" data-target="#del_modal" type="button" class="btn btn-danger" data-dismiss=""><i class="fas fa-trash-alt fa-1x"></i> ลบ</button>
-			<button id="btn_save" onclick="update()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
-			
-		
+			txt=`
+			    <button id="btn_save" onclick="update()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> ยืนยัน</button>`;
 		let hiden=`	<input type="hidden" name="l_id" id="l_id" value="${l_id}">
-					<input type="hidden" name="lf_id" id="lf_id" value="${lf_id}">
-					<input type="hidden" name="hidd_lf_file" id="hidd_lf_file" value="${lf_file}">`;
+					`;
 
-		let la_comment_out=`<textarea class="form-control" rows="5" >${la_comment}</textarea>`;
+		let la_comment_out=la_comment;
 		let img='';
 		for(i=4;i<lf_file.length;i++){
 			img+=lf_file[i];
 		}
+		
+		let l_user_detail=`
+						<div class="col-md-8 ">
+							<label class="cv_keep-left" for="l_title">แผนก </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                </div>
+								<input type="text" readonly class="form-control" value="${d_name}">
 
+	                        </div>
+						</div>
+						<div class="col-md-4 ">
+							<label class="cv_keep-left" for="l_title">บันทึกวันที่ </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                </div>
+								<input type="text" readonly class="form-control" value="${chk_date(la_date)}">
+
+	                        </div>
+						</div>
+						
+						<div class="col-md-12 ">
+							<label class="cv_keep-left" for="l_title">ตำแหน่ง </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                </div>
+								<input type="text" readonly class="form-control" value="${p_name}">
+
+	                        </div>
+						</div>
+						
+						<div class="col-md-12 ">
+							<label class="cv_keep-left" for="l_title">ชื่อ </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                </div>
+								<input type="text" readonly class="form-control" value="${u_fullname}">
+
+	                        </div>
+						</div>
+						
+		`;
+		$("#l_user_detail").html(l_user_detail);					
 		$("#hidden").html(hiden);
 		$("#l_title_select").val(l_title );
 		$("#l_detail").val(l_detail);
@@ -223,7 +269,7 @@
 		$("#sh_img").attr('src',img);
 		
 		$("#la_date").val(la_date);
-        $("#la_comment").val(la_comment_out);
+        $("#la_comment").val((la_comment_out=="null"?" ":la_comment_out));
         $("#u_fullname").val(u_fullname);
 		
 		$("#modal_l_log").modal('toggle');
@@ -239,70 +285,16 @@
 		$("#frm_l_log").removeClass("was-validated");
         $("#msg").html('');
 	}
-	function add(){
-		$("#msg").html("");
-        let sta=0;
-        let l_title="";
-        let files = $("#lf_files")[0].files[0]; 
-        if($("#l_title_type").val()!=""){
-            l_title=$("#l_title_type").val();
-        }else{
-            l_title=$("#l_title_select").val();
-        }
-        
-		
-		if(sta!=0){$("#frm_l_log").addClass("was-validated");return false;}
-		else{
-			let f_data=new FormData();
-			let data = $("#frm_l_log").serializeArray();
-			$.each(data,(key,val)=>{
-				if(val.name!="l_title_type" && val.name!="l_title_select"){
-					f_data.append(val.name,val.value);
-				}
-			});
-            f_data.append("l_log_add",true);
-            f_data.append("lf_file",files);
-            f_data.append("l_title",l_title);
-			event.preventDefault();
-			$.ajax({
-				type: "POST",
-	 			url:link_page,
-	 			data: f_data,
-				contentType: false,
-				processData: false,
-			}).done((res)=> {
-				let data=JSON.parse(res);
-				if(data.status){
-					$("#modal_l_log").modal('toggle');
-					load_l_log('',tmp_page);
-					load_l_log_title();
-					clear_input();
-				}else{
-					$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
-				}	 				
-	 		});
-		}
-	}	
+	
 	function update(){
 			$("#msg").html("");
 			let f_data=new FormData();
 			let data = $("#frm_l_log").serializeArray();
-			let l_title="";
 
-			let files = $("#lf_files")[0].files[0]; 
-			if($("#l_title_type").val()!=""){
-				l_title=$("#l_title_type").val();
-			}else{
-				l_title=$("#l_title_select").val();
-			}
-			$.each(data,(key,val)=>{
-				if(val.name!="l_title_type" && val.name!="l_title_select"){
-					f_data.append(val.name,val.value);
-				}
-			});
-			f_data.append("l_log_update",true);
-			f_data.append("lf_file",files);
-            f_data.append("l_title",l_title);
+			f_data.append("l_log_approve_update",true);
+			f_data.append("la_comment",$("#la_comment").val());
+            f_data.append("l_id",$("#l_id").val());
+
 			event.preventDefault();
 				$.ajax({
 					type: "POST",
@@ -314,7 +306,7 @@
 					let data=JSON.parse(res);
 					if(data.status){
 						$("#modal_l_log").modal('toggle');
-						load_l_log(tmp_filter,tmp_page);
+						load_l_log(tmp_filter,tmp_page,'');
 						load_l_log_title();
 						clear_input();
 					}else{
@@ -322,67 +314,6 @@
 					}
 				});	
 	}	
-	function del(){
-			$("#msg").html("");
-			$.ajax({
-				type:"POST",
-				url:link_page,
-				data:{
-					"l_id":$("#l_id").val(),
-					"l_log_del":true
-				}
-			}).done((res)=>{
-				let data=JSON.parse(res);
-				if(data.status){
-					// $("#modal_l_log").modal('toggle');
-					load_l_log(tmp_filter,tmp_page);
-					load_l_log_title();
-					clear_input();
-				}else{
-					$("#msg").html("<div style='color:#bd4646'>"+data.msg+"</div>");
-				}
-
-			});
-	}
-	function load_l_log(filter,page){
-        
-			let txt;
-			tmp_filter=filter;
-			$("#loading").show();
-			$.ajax({
-				type:"POST",
-				url:link_page,
-				data:{
-					"load_l_log":true,
-					"filter":filter,
-					"page":page
-				}
-			}).done((res)=>{
-				var data=JSON.parse(res);
-				if(!data.msg){
-					$.each(data,(i, item)=>{
-						// console.log(data[i]);
-						let css=`style="background-color:#e0e9e5;color:#000"`;
-						let row=(page==1?parseInt(i)+1:(parseInt(i)+1)+(page-1)*10);
-						let limit_word="";
-						
-						txt+=`<tr ${css}>
-					        <td>${row}</td>
-							<td>${item.l_date }</td>
-					        <td>${item.l_title }</td>
-
-					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.l_id}','${item.l_title}','${item.l_detail}','${item.lf_file}','${item.la_date}','${item.la_comment}','${item.u_fullname}','${item.lf_id}')" class="btn">
-				        		<i  class="fas fa-book-open fa-2x"></i>
-				        	</button>`;
-					});
-				}else{
-					txt=`<tr><td colspan='3' align="center">no data</td></tr>`;
-				}
-				$("#loading").hide();
-				$("#l_log_content").html(txt);
-				set_pagination(filter,page);
-			});
-	}
 	function load_l_log_title(){
 		let txt=`<option value="0" selected disabled>เลือกหัวข้องาน</option>`;
 		$("#loading").show();
@@ -402,7 +333,108 @@
 			$("#loading").hide();
 			$("#l_title_select").html(txt);
 		});
+	}function load_l_log(filter,page,mode_data){
+			let ele_mode_data;
+			let txt;
+			tmp_filter=filter;
+			$("#loading").show();
+			$.ajax({
+				type:"POST",
+				url:link_page,
+				data:{
+					"load_l_log_employee":true,
+					"filter":filter,
+					"mode_data":mode_data,
+					"page":page
+				}
+			}).done((res)=>{
+				let NotApprove=0;
+				let Approved=0;
+				let data=JSON.parse(res);
+				if(!data.msg){
+					$.each(data,(i, item)=>{
+                        let css='';
+                        if(item.u_id==null){
+                            css=`style="background-color:#f57a72;color:#000"`;
+							NotApprove++;
+                        }else{
+                            css=`style="background-color:#e0e9e5;color:#000"`;
+							Approved++;
+                        }
+						
+						let row=(page==1?parseInt(i)+1:(parseInt(i)+1)+(page-1)*10);
+						let limit_word="";
+						
+						txt+=`<tr ${css}>
+					        <td>${row}</td>
+							<td>${item.l_date }</td>
+							<td>${item.d_name }</td>
+                            <td>${item.u_fullname }</td>
+					        <td>${item.l_title }</td>
+
+					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.l_id}','${item.l_title}'
+							,'${item.l_detail}','${item.lf_file}','${item.la_date}',
+							'${item.la_comment}','${item.u_fullname}','${item.p_name}','${item.d_name}','${item.l_date}') 
+" class="btn">
+				        		<i  class="fas fa-book-open fa-2x"></i>
+				        	</button>`;
+					});
+				}else{
+					txt=`<tr><td colspan='3' align="center">no data</td></tr>`;
+				}
+
+				let mode_data=`
+                      <div class="col-xl-6 col-md-6 mb-4" onclick="load_l_log('',${tmp_page},0)">
+                          <div class="card border-left-success shadow h-100 py-2">
+                              <div class="card-body">
+                                  <div class="row no-gutters align-items-center">
+                                      <div class="col mr-2">
+                                          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">ตรวจแล้ว
+                                          </div>
+                                          <div class="row no-gutters align-items-center">
+                                              <div class="col-auto">
+                                                  <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">${Approved} <i class="fas fa-users"></i> </div>
+                                              </div>
+                                              
+                                          </div>
+                                      </div>
+                                      <div class="col-auto">
+                                          <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+					  <div class="col-xl-6 col-md-6 mb-4" onclick="load_l_log('',${tmp_page},1)">
+                          <div class="card border-left-danger shadow h-100 py-2">
+                              <div class="card-body">
+                                  <div class="row no-gutters align-items-center">
+                                      <div class="col mr-2">
+                                          <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">ยังไม่ตรวจ
+                                          </div>
+                                          <div class="row no-gutters align-items-center">
+                                              <div class="col-auto">
+                                                  <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">${NotApprove} <i class="fas fa-users"></i> </div>
+                                              </div>
+                                              
+                                          </div>
+                                      </div>
+                                      <div class="col-auto">
+                                          <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  `;
+
+				$("#loading").hide();
+				$("#mode_data").html(mode_data);
+				$("#l_log_content").html(txt);
+				set_pagination(filter,page);
+			});
 	}
+	
     
 	function set_pagination(filter,page){
 		let start_page;
@@ -413,7 +445,7 @@
 				type:"POST",
 				url:link_page,
 				data:{
-					"set_pagination_l_log":true,
+					"set_pagination_l_log_employee":true,
 					"filter":filter
 				}
 			}).done((res)=>{
@@ -426,17 +458,17 @@
 					start_page=1;
 					end_page=10;
 				}
-				$("#pagination").append(`<li class="page-item " id="pagi_first"><a class="page-link" onclick="load_l_log('${tmp_filter}',1)"><i class="fas fa-fast-backward"></i></a></li>`);
+				$("#pagination").append(`<li class="page-item " id="pagi_first"><a class="page-link" onclick="load_l_log('${tmp_filter}',1,'')"><i class="fas fa-fast-backward"></i></a></li>`);
 				for(let i=start_page;i<=data.page;i++){
 					if(i<=end_page){
-						$("#pagination").append(`<li class="page-item" id="pagi_${i}"><a class="page-link" onclick="load_l_log('${tmp_filter}',${i})">${i}</a></li>`);
+						$("#pagination").append(`<li class="page-item" id="pagi_${i}"><a class="page-link" onclick="load_l_log('${tmp_filter}',${i},'')">${i}</a></li>`);
 						if(i==page){
 							let active_page=`#pagi_${page}`;
 							$(active_page).addClass("active");
 						}
 					}
 				}
-				$("#pagination").append(`<li class="page-item " id="pagi_last"><a class="page-link" onclick="load_l_log('${tmp_filter}',${data})"><i class="fas fa-fast-forward"></i></a></li>`);
+				$("#pagination").append(`<li class="page-item " id="pagi_last"><a class="page-link" onclick="load_l_log('${tmp_filter}',${data},'')"><i class="fas fa-fast-forward"></i></a></li>`);
 			});	
 	}
 	

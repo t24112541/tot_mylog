@@ -35,6 +35,8 @@
 <script type="text/javascript">
 	var link_page_usr=link+"/l_users.php";
   var emp_id="";
+  var l_department='';
+  var l_province='';
   load_user();
   $("#confirm_u_password").keyup(function(){
         if($("#u_password").val()!=$("#confirm_u_password").val()){
@@ -55,7 +57,6 @@
         var data=JSON.parse(res);
         emp_id=data[0].u_id;
         txt=`
-        
                 <a class="dropdown-item" href="#" onclick="sh_data_usr('${data[0].u_id }','${data[0].u_fullname}','${data[0].u_tel}','${data[0].p_id}','${data[0].p_name}','${data[0].u_code}','${data[0].u_password}','${data[0].pv_id}','${data[0].pv_name}','${data[0].d_id}','${data[0].d_name}')">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>${data[0].u_fullname}
                 </a>
@@ -65,11 +66,13 @@
                   ออกจากระบบ
                 </a>
         `;
-        // load_cc_position_nav();
-        // load_cc_province_nav();
+        l_department=data[0].d_id;
+        // console.log(l_department);
+        l_province=data[0].pv_id;
         $("#user_profile").html(txt);
       });
   }
+  // console.log(l_department);
   function update_usr(){
 			$("#msg").html("");
 			let f_data=new FormData();

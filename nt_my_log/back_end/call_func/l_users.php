@@ -3,6 +3,50 @@
 
 	$perpage=10;
 
+	if($_SESSION['p_priority']==1){
+		$sql_normal="
+			where 
+				l_users.p_id=l_position.p_id && 
+				l_department.d_id=l_users.d_id && 
+				l_province.pv_id=l_users.pv_id && 
+				l_position.p_id=l_users.p_id && 
+				l_users.pv_id='{$_SESSION['pv_id']}' && 
+				l_users.u_id!='{$_SESSION['usr']}' && 
+				l_users.d_id='{$_SESSION['d_id']}' 
+		";
+		$sql_search="
+			where 
+				l_users.p_id=l_position.p_id && 
+				l_department.d_id=l_users.d_id && 
+				l_province.pv_id=l_users.pv_id && 
+				l_position.p_id=l_users.p_id && 
+				l_users.pv_id='{$_SESSION['pv_id']}' && 
+				l_users.u_id!='{$_SESSION['usr']}' && 
+				l_users.d_id='{$_SESSION['d_id']}' &&
+				u_fullname like '%{$_POST['filter']}%' 
+		";
+	}else if($_SESSION['p_priority']==0){
+		$sql_normal="
+			where 
+				l_users.p_id=l_position.p_id && 
+				l_department.d_id=l_users.d_id && 
+				l_province.pv_id=l_users.pv_id && 
+				l_position.p_id=l_users.p_id && 
+				l_users.pv_id='{$_SESSION['pv_id']}' && 
+				l_users.u_id!='{$_SESSION['usr']}' 
+		";
+		$sql_search="
+			where 
+				l_users.p_id=l_position.p_id && 
+				l_department.d_id=l_users.d_id && 
+				l_province.pv_id=l_users.pv_id && 
+				l_position.p_id=l_users.p_id && 
+				l_users.pv_id='{$_SESSION['pv_id']}' && 
+				l_users.u_id!='{$_SESSION['usr']}' && 
+				u_fullname like '%{$_POST['filter']}%'
+		";
+	}
+		
 	if(isset($_POST['load_l_users'])){
 		if(isset($_POST['page'])){
 			$page=$_POST['page'];
@@ -11,15 +55,15 @@
 		} 
 		$start=($page-1)*$perpage;
 		if(isset($_POST['filter']) && $_POST['filter']!=""){
-			$option="where l_users.p_id=l_position.p_id && l_department.d_id=l_users.d_id && l_province.pv_id=l_users.pv_id && l_users.pv_id='{$_SESSION['pv_id']}' && u_name like '%{$_POST['filter']}%' limit {$start},{$perpage} ";
+			$option=$sql_search."limit {$start},{$perpage}";
 		}else{
-			$option="where l_users.p_id=l_position.p_id && l_department.d_id=l_users.d_id && l_province.pv_id=l_users.pv_id && l_users.pv_id='{$_SESSION['pv_id']}' limit {$start},{$perpage}";
+			$option=$sql_normal."limit {$start},{$perpage}";
 		}
 		
 		echo $db->select("l_users,l_position,l_province,l_department","*",$option);
 	}else if(isset($_POST['load_u_name'])){
 		$option="where u_id={$_SESSION['usr']} "; //&& l_users.p_id=l_position.p_id && l_province.pv_id=l_users.pv_id 
-		echo $db->select("l_users","u_fullname,u_id",$option); //,l_position,l_province
+		echo $db->select("l_users","u_fullname,u_id,pv_id,d_id",$option); //,l_position,l_province
 
 	}else if(isset($_POST['load_l_users_detail'])){
 		if(isset($_POST['filter']) && $_POST['filter']!=""){
@@ -103,12 +147,12 @@
 		
 	}else if(isset($_POST['set_pagination_l_users'])){
 		if(isset($_POST['filter']) && $_POST['filter']!=""){
-			$where="where l_users.p_id=l_position.p_id && l_province.pv_id=l_users.pv_id && u_name like '%{$_POST['filter']}%'  ";
+			$option=$sql_search;
 		}else{
-			$where="where l_users.p_id=l_position.p_id && l_province.pv_id=l_users.pv_id ";
+			$option=$sql_normal;
 		}
 
-		$total_page=ceil($db->count_rows("l_users,l_position,l_province","*",$where)/$perpage);
+		$total_page=ceil($db->count_rows("l_users,l_position,l_province,l_department","*",$option)/$perpage);
 		$res=[
 			"page"=>$total_page
 		];

@@ -176,6 +176,8 @@
     load_l_position();
 	load_l_province();
     load_l_department();
+	
+
 	// ------------------------- function -------------------------//
 	$(document).on('keypress',function(e) {
         
@@ -210,6 +212,9 @@
 	function open_add(){
         $("#frm_mode").val(1);
 		clear_input();
+		// console.log(l_department);
+		$("#d_id").val(l_department);
+		$("#pv_id").val(l_province);
 		let txt=`<button id="btn_save" onclick="add()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
 		$("#mng").html(txt);
 	}
@@ -224,7 +229,7 @@
 		
 		let hiden=`<input type="hidden" name="u_id" id="u_id" value="${u_id}">`;
 
-		let p_des_new=`<textarea class="form-control" rows="5" >${p_des}</textarea>`;
+		let p_des_new=`<textarea readonly class="form-control" rows="5" >${p_des}</textarea>`;
 		$("#hidden").html(hiden);
 		$("#u_fullname ").val(u_fullname );
 		$("#d_id").val(d_id);

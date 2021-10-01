@@ -17,26 +17,109 @@
             l_log.l_id DESC  limit {$start},{$perpage}";
 		}
 		echo $db->select("l_log,l_log_files,l_log_approve,l_users","*",$option);
-    }else if(isset($_POST['load_l_log_all'])){
+    }else if(isset($_POST['load_l_log_employee'])){
 		if(isset($_POST['page'])){
 			$page=$_POST['page'];
 		}else{
 			$page=1;
 		} 
 		$start=($page-1)*$perpage;
-		if(isset($_POST['filter']) && $_POST['filter']!=""){
-			$option="where  l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id && l_title like '%{$_POST['filter']}%' ";
-		}else{
-			$option="where  l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id ORDER BY
-            l_log.l_id DESC  limit {$start},{$perpage}";
+		$option="
+			INNER JOIN
+				l_log
+			ON 
+				l_users.u_id = l_log.u_id
+			INNER JOIN
+				l_log_approve
+			ON 
+				l_log.l_id = l_log_approve.l_id
+			INNER JOIN
+				l_log_files
+			ON 
+				l_log.l_id = l_log_files.l_id
+			INNER JOIN
+				l_position
+			ON 
+				l_users.p_id = l_position.p_id
+			INNER JOIN
+				l_province
+			ON 
+				l_users.pv_id = l_province.pv_id
+			INNER JOIN
+				l_department
+			ON 
+				l_users.d_id = l_department.d_id
+			where p_priority>'{$_SESSION['p_priority']}'";
+		if(isset($_POST['filter']) && $_POST['filter']!=""){	
+			$option.=" && (d_name like '%{$_POST['filter']}%' || l_title like '%{$_POST['filter']}%' || u_fullname like '%{$_POST['filter']}%') ";
+		}else if(isset($_POST['mode_data']) && $_POST['mode_data']!=""){
+			if($_POST['mode_data']==1){
+				$option.=" && l_log_approve.u_id IS NULL ";
+			}else{
+				$option.=" && l_log_approve.u_id!='' ";
+			}
 		}
-		echo $db->select("l_log,l_log_files,l_log_approve","*",$option);
+		$option.=" ORDER BY l_log.l_id DESC  limit {$start},{$perpage}";
+		
+		echo $db->select("l_users","
+							l_department.d_name, 
+							l_province.pv_name, 
+							l_log_files.lf_file, 
+							l_position.p_name, 
+							l_position.p_priority, 
+							l_position.p_des, 
+							l_log_approve.la_date, 
+							l_log_approve.u_id, 
+							l_log_approve.la_comment, 
+							l_log.l_date,
+							l_log.l_id, 
+							l_log.l_detail, 
+							l_log.l_title, 
+							l_users.u_fullname, 
+							l_users.u_tel",$option);
+	}
+	else if(isset($_POST['set_pagination_l_log_employee'])){
+		$option="
+			INNER JOIN
+				l_log
+			ON 
+				l_users.u_id = l_log.u_id
+			INNER JOIN
+				l_log_approve
+			ON 
+				l_log.l_id = l_log_approve.l_id
+			INNER JOIN
+				l_log_files
+			ON 
+				l_log.l_id = l_log_files.l_id
+			INNER JOIN
+				l_position
+			ON 
+				l_users.p_id = l_position.p_id
+			INNER JOIN
+				l_province
+			ON 
+				l_users.pv_id = l_province.pv_id
+			INNER JOIN
+				l_department
+			ON 
+				l_users.d_id = l_department.d_id
+			where p_priority>'{$_SESSION['p_priority']}'";
+		if(isset($_POST['filter']) && $_POST['filter']!=""){
+			$option.=" && (l_title like '%{$_POST['filter']}%' || u_fullname like '%{$_POST['filter']}%') ";
+		}else{
+			$option.=" ";
+		}
+		$total_page=ceil($db->count_rows("l_users","l_log.l_id",$option)/$perpage);
+        $res=[
+            "page"=>$total_page
+        ];
+		echo json_encode($res);
     }else if(isset($_POST['load_l_log_title'])){
         $select="l_log.l_title";
 		$option="GROUP BY l_log.l_title";
 		echo $db->select("l_log",$select,$option);
-	}
-    else if(isset($_POST['l_log_add'])){
+	}else if(isset($_POST['l_log_add'])){
         $fields="";
 		$data="";
 		$fields_convert="";
@@ -82,7 +165,39 @@
 			echo json_encode($res);
         }
         
-
+		
+	}else if(isset($_POST['l_log_approve_update'])){
+	    $data="";
+		$data_convert="u_id='{$_SESSION['usr']}',";
+		$update="";
+		foreach ($_POST as $key => $value) {
+            if($key!="frm_mode" && $value!="" && $key!="hidden"  && $key!="frm_l_log" && $key!="l_log_approve_update" && $key!="lf_files" && $key!="hidd_lf_file" && $key!="lf_id"){
+				$data.="$key=\"{$value}\",";
+			}
+		}
+		for($i=0;$i<strlen($data)-1;$i++){
+			$data_convert.= $data[$i];
+		}
+		// echo $data_convert;
+		$data=json_decode($db->update("l_log_approve",$data_convert,"l_id='{$_POST['l_id']}'"));
+		$log_data=$data_convert;
+		$db->log($_SESSION['name'],"edit l_log",$log_data); 
+		if($data->status){
+			
+			$lf_files=$_POST['hidd_lf_file'];
+			if(isset($_FILES) && $_FILES['lf_file']['name']!=''){
+				// $filename = resize_image("../../img/".date("Y-m-d_His").".jpg", 200, 200);
+				$filename = "../../img/".date("Y-m-d_His").".jpg";
+				// $db->get_arr($_FILES['lf_file']);
+                if(move_uploaded_file($_FILES['lf_file']["tmp_name"], $filename)){
+					$lf_files=$filename;
+                }
+            }
+			$fields_l_log_files="lf_file='{$lf_files}'";
+			echo $db->update("l_log_files",$fields_l_log_files,"lf_id='{$_POST['lf_id']}'");
+		}else{
+			echo json_encode($data);
+		}
 	}else if(isset($_POST['l_log_update'])){
 	    $data="";
 		$data_convert="";
@@ -123,7 +238,7 @@
 		if(isset($_POST['filter']) && $_POST['filter']!=""){
 			$where="where l_log.u_id=i_users.u_id && l_users.u_id={$_SESSION['usr']} && l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id && l_title like '%{$_POST['filter']}%'";
 		}else{
-			$where="l_log.u_id=i_users.u_id && l_users.u_id={$_SESSION['usr']} && l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id ";
+			$where="where l_log.u_id=l_users.u_id && l_users.u_id={$_SESSION['usr']} && l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id";
 		}
 
 		$total_page=ceil($db->count_rows("l_log,l_log_files,l_log_approve,l_users","*",$where)/$perpage);

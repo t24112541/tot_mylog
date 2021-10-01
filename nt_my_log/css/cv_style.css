@@ -92,6 +92,9 @@
 .bg-cyan {
   background-color: #2c4d6f !important;
 }
+.chk_color{
+  background-color: #f57a72;
+}
 .sidenav {
   height: 100%;
   width: 0;
