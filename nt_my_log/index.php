@@ -78,7 +78,7 @@
                 }else if($_SESSION['p_priority']>=1){
                   require_once("./views/l_log_employee.html");
                 }else if($_SESSION['p_priority']==0){
-                  require_once("./views/l_log_employee.html");
+                  require_once("./views/dashboard.html");
                 }
                 
               }

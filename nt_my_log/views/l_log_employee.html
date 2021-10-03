@@ -1,7 +1,7 @@
 <div id="loading" class="spinner_border text-primary" style="display:none"></div>
 <!-- Content Column -->
 <div class="d-sm-flex align-items-center justify-content-between mb-2">
-    <h1 class="h3 mb-0 text-gray-800">บันทึกการทำงานที่ต้องตรวจ</h1>
+    <h1 onclick="load_l_log('',1,'')" class="h3 mb-0 text-gray-800">บันทึกการทำงานที่ต้องตรวจ <i class="fas fa-sync-alt text-success"></i></h1>
     <div class="">
         <form class="form-inline" id="frm_search">
             <div class="input-group">
@@ -149,7 +149,12 @@
 	let tmp_mode_data;
 	// -------------------------- onload ---------------------------//
 	var link_page=link+"/l_log.php";
-	load_l_log('',tmp_page,'');
+	if($_rec.filter!="underfine"){
+		load_l_log($_rec.filter,tmp_page,'');
+	}else{
+		load_l_log('',tmp_page,'');
+	}
+	
 	load_l_log_title();
 	// ------------------------- function -------------------------//
 	$('#lf_files').imageUploadResizer({
