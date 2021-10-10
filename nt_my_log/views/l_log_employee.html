@@ -7,8 +7,10 @@
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
-                </div>
-                <input id="txt_search" type="text" class="form-control" placeholder="ค้นหา..">
+				</div>
+				<input id="date_search" type="date" class="form-control" placeholder="ค้นหาจากวันที่..">
+				<input id="txt_search" type="text" class="form-control" placeholder="ค้นหา..">
+				
                 <button type="button" onclick="func_search()" class="btn btn-light">ค้นหา</button>
             </div>
         </form>
@@ -52,60 +54,26 @@
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header" id="head_stage">
-                <h4 class="modal-title">บันทึกการทำงานของพนักงาน</h4>
-                <button type="button" onclick="clear_input()" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">บันทึกการทำงานของผู้ปฏิบัติงาน</h4>
+				<button type="button" onclick="cv_print('frm_l_log')" class="close" data-dismiss="modal"><i class="fas fa-print"></i> <p style="font-size: 10px;color:red">**ก่อนทำการพิมพ์ต้องแน่ใจว่าได้ทำการบันทึกข้อมูลก่อนแล้ว</p></button>
+				
+				<button type="button" onclick="clear_input()" class="close" data-dismiss="modal">&times;</button>
             </div>
             <!-- Modal body -->
             
             <form id="frm_l_log" enctype="multipart/form-data">
                 <div class="modal-body">
+						<div class="col-md-12 mb-12" id="" >
+								
+								
+									<center>บันทึกการทำงานของผู้ปฏิบัติงาน</center>
+								
+						</div>
 						<div class="row" id="l_user_detail">
 							
 						</div>
                     <div class="row">
-						
-                        <div class="col-md-12 mb-12" id="l_title_1">
-                            <label class="cv_keep-left" for="l_title">เรื่อง </label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
-                                </div>
-                                <input type="hidden" name="frm_mode" id="frm_mode">
-                                <select class="form-control" id="l_title_select" name="l_title_select" required placeholder="เรื่อง "></select>                        
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-12 mb-12" id="l_title_2" style="display:none ;">
-                                <label class="cv_keep-left" for="l_title">เรื่อง </label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" ><i class="fas fa-tags"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control" id="l_title_type" name="l_title_type" oninvalid="this.setCustomValidity('พิมพ์เรื่องที่ต้องการเพิ่ม')"required oninput="this.setCustomValidity('')" placeholder="พิมพ์เรื่องที่ต้องการเพิ่ม">
-                                </div>
-                        </div>
-
-                       
-                        <div class="col-md-12 mb-12">
-                                <label class="cv_keep-left" for="l_detail">รายละเอียด</label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" ><i class="fas fa-tags"></i></span>
-                                    </div>
-                                    <div id="hidden"></div>
-                                    <textarea class="form-control" rows="5" id="l_detail" name="l_detail"></textarea>                        
-                                </div>
-                        </div>
-                        <div class="col-md-12 mb-12">
-                                <label class="cv_keep-left" for="lf_files">ภาพประกอบ</label>
-                                  <div class="input-group">
-                                      <div class="input-group-prepend">
-                                        <span class="input-group-text" ><i class="fas fa-images"></i></span>
-                                      </div>
-                                      <button type="button" onclick="upload('#lf_files')" class="btn">เลือกรูปภาพ</button>
-                                      <input class="form-control" type="file" accept="image/*"  id="lf_files" name="lf_files" class="" style="display:none">
-                                  </div>
-                        </div>
+							<input type="hidden" id="hidden">
                         <div class="col-md-12 mb-12" id="img_pre" >
                                 <label class="cv_keep-left" for="lf_files"></label>
                                 <div class="input-group">
@@ -114,16 +82,7 @@
                                     </div>
                                 </div>
                         </div>
-                        <div class="col-md-12 mb-12">
-                            <label class="cv_keep-left" for="la_comment">คอมเมนต์ถึงผู้ปฏิบัติงาน</label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
-                                </div>
-                                
-                                <textarea class="form-control" rows="5" id="la_comment" name="la_comment"></textarea>                        
-                            </div>
-                        </div>
+                        
                     </div>
                     
                     
@@ -131,11 +90,12 @@
                     <div id="msg"></div>
                 </div>
             
-                <!-- Modal footer -->
-                <div class="modal-footer col-sm-12" id="modal_l_log_foot">	
+                
+			</form>
+			<!-- Modal footer -->
+				<div class="modal-footer col-sm-12" id="modal_l_log_foot">	
                     <div id="mng"></div>
                 </div>
-            </form>
         </div>
 
     </div>
@@ -162,6 +122,10 @@
 		quality: 0.8, // Defaults 1
 		do_not_resize: ['gif', 'svg'], // Defaults []
 	});
+	$('#date_search').change(function () {
+		$('#txt_search').val($('#date_search').val());
+		
+    });
 	$('#lf_files').change(function () {
 		$("#loading").show();
 		img_preview(this,'sh_img');
@@ -204,10 +168,10 @@
 	  event.preventDefault();
 	});
 	
-	function sh_data(l_id,l_title,l_detail,lf_file,la_date,la_comment,u_fullname,p_name,d_name,l_date){
+	function sh_data(l_id,l_title,l_detail,lf_file,la_date,la_comment,u_fullname,p_name,d_name,l_date,p_des){
       
         $("#frm_mode").val(2);
-		clear_input();
+		// clear_input();
 		let txt='';
 
 			txt=`
@@ -222,11 +186,21 @@
 		}
 		
 		let l_user_detail=`
+						<div class="col-md-12 ">
+							<label class="cv_keep-left" for="l_title">เรื่อง </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="far fa-newspaper"></i></span>
+                                </div>
+								<input type="text" readonly class="form-control" value="${l_title}">
+
+	                        </div>
+						</div>
 						<div class="col-md-8 ">
 							<label class="cv_keep-left" for="l_title">แผนก </label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                    <span class="input-group-text" ><i class="fas fa-place-of-worship"></i></span>
                                 </div>
 								<input type="text" readonly class="form-control" value="${d_name}">
 
@@ -236,7 +210,7 @@
 							<label class="cv_keep-left" for="l_title">บันทึกวันที่ </label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                    <span class="input-group-text" ><i class="far fa-calendar-minus"></i></span>
                                 </div>
 								<input type="text" readonly class="form-control" value="${chk_date(la_date)}">
 
@@ -253,6 +227,16 @@
 
 	                        </div>
 						</div>
+						<div class="col-md-12 ">
+							<label class="cv_keep-left" for="l_title">รายละเอียดตำแหน่ง </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="fas fa-tags"></i></span>
+                                </div>
+								<input type="text" readonly class="form-control" value="${p_des}">
+
+	                        </div>
+						</div>
 						
 						<div class="col-md-12 ">
 							<label class="cv_keep-left" for="l_title">ชื่อ </label>
@@ -265,22 +249,44 @@
 	                        </div>
 						</div>
 						
+						<div class="col-md-12 " >
+							<label class="cv_keep-left" for="l_title">รายละเอียด </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="far fa-sticky-note"></i></span>
+                                </div>
+								<textarea readonly class="form-control" rows="5">${l_detail}</textarea>
+
+	                        </div>
+						</div>
+						<div class="col-md-12 mb-12" style="margin-bottom:10px">
+                            <label class="cv_keep-left" for="la_comment">คอมเมนต์ถึงผู้ปฏิบัติงาน</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="far fa-comment-alt"></i></span>
+                                </div>
+                                
+                                <textarea class="form-control" rows="5" id="la_comment" name="la_comment">${(la_comment_out=="null"?" ":la_comment_out)}</textarea>                        
+                            </div>
+                        </div>
+						
 		`;
 		$("#l_user_detail").html(l_user_detail);					
 		$("#hidden").html(hiden);
-		$("#l_title_select").val(l_title );
-		$("#l_detail").val(l_detail);
+		// $("#l_title_select").val(l_title );
+		// $("#l_detail").val(l_detail);
 
 		$("#sh_img").attr('src',img);
 		
-		$("#la_date").val(la_date);
-        $("#la_comment").val((la_comment_out=="null"?" ":la_comment_out));
-        $("#u_fullname").val(u_fullname);
+		// $("#la_date").val(la_date);
+        // $("#la_comment").val((la_comment_out=="null"?" ":la_comment_out));
+        // $("#u_fullname").val(u_fullname);
 		
 		$("#modal_l_log").modal('toggle');
 		$("#mng").html(txt);
 	}
 	function clear_input(){
+		location.reload();
 		$("#hidden").html('');
 		$("#l_title_select").val('');
 		$("#l_title_type").val('');
@@ -379,7 +385,7 @@
 
 					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.l_id}','${item.l_title}'
 							,'${item.l_detail}','${item.lf_file}','${item.la_date}',
-							'${item.la_comment}','${item.u_fullname}','${item.p_name}','${item.d_name}','${item.l_date}') 
+							'${item.la_comment}','${item.u_fullname}','${item.p_name}','${item.d_name}','${item.l_date}','${item.p_des}') 
 " class="btn">
 				        		<i  class="fas fa-book-open fa-2x"></i>
 				        	</button>`;

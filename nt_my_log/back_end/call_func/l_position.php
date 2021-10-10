@@ -1,7 +1,7 @@
 <?php
 	include_once("./header.php");
 
-	$perpage=10;
+	$perpage=100;
 
 	if(isset($_POST['load_l_position'])){
 		if(isset($_POST['page'])){

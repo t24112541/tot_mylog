@@ -51,7 +51,7 @@
 				l_users.d_id = l_department.d_id
 			where p_priority>'{$_SESSION['p_priority']}'";
 		if(isset($_POST['filter']) && $_POST['filter']!=""){	
-			$option.=" && (d_name like '%{$_POST['filter']}%' || l_title like '%{$_POST['filter']}%' || u_fullname like '%{$_POST['filter']}%') ";
+			$option.=" && (l_date like '{$_POST['filter']}%' || d_name like '%{$_POST['filter']}%' || l_title like '%{$_POST['filter']}%' || u_fullname like '%{$_POST['filter']}%') ";
 		}else if(isset($_POST['mode_data']) && $_POST['mode_data']!=""){
 			if($_POST['mode_data']==1){
 				$option.=" && l_log_approve.u_id IS NULL ";

@@ -1,7 +1,7 @@
 FROM php:7.0-apache
 COPY . /var/www/html
 RUN docker-php-ext-install mysqli
-EXPOSE 8100
+EXPOSE 8001
 
 
 
