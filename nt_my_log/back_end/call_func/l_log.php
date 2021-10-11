@@ -117,7 +117,17 @@
 		echo json_encode($res);
     }else if(isset($_POST['load_l_log_title'])){
         $select="l_log.l_title";
-		$option="GROUP BY l_log.l_title";
+		$option="
+			INNER JOIN
+				l_users
+			ON 
+				l_log.u_id = l_users.u_id
+			INNER JOIN
+				l_department
+			ON 
+				l_department.d_id = l_users.d_id
+			where l_department.d_id='{$_SESSION['d_id']}'
+			GROUP BY l_log.l_title";
 		echo $db->select("l_log",$select,$option);
 	}else if(isset($_POST['l_log_add'])){
         $fields="";

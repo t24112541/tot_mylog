@@ -142,6 +142,7 @@ class controller{
 	function select($table,$select,$where){
 		$data=[];
 		// echo "select $select from $table $where"."end \n";
+		$this->conn->query("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
 		$que=$this->conn->query("select $select from $table $where");
 		if($que->num_rows!=0){
 			foreach ($que as $key => $value) {
