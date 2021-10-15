@@ -66,7 +66,7 @@ function title_of_use(){
                                                   <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">${item.num_title} <i class="fas fa-users"></i> </div>
                                               </div>
                                               <div class="col-auto">
-                                                  <div class="text-gray-800">${(!item.approved?"มีรายการรอการตรวจสอบ":"")}</div>
+                                                  <div class="text-gray-800">${((item.approved<item.num_title)?"มีรายการรอการตรวจสอบ":"")}</div>
                                               </div>
                                               
                                           </div>

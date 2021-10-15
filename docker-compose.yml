@@ -12,6 +12,7 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
     ports:
       - "9907:3306"
+    restart: always
   web:
     build: .
     image: php:7.2.2-apache
@@ -30,3 +31,4 @@ services:
       - "8001:80"
     stdin_open: true
     tty: true
+    restart: always

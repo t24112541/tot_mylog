@@ -35,7 +35,7 @@
         $select="
             count(l_log.u_id) as num_title, 
             l_log.l_title,
-            l_log_approve.u_id as approved";
+            count(l_log_approve.u_id) as approved";
         echo $db->select($table,$select,"WHERE l_users.u_id <> '1' GROUP BY l_log.l_title");
 
 	}

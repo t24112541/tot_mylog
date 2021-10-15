@@ -293,13 +293,44 @@
 		$db->log($_SESSION['name'],"remove l_log","l_id='{$_POST['l_id']}' "); 
 
 	}else if(isset($_POST['set_pagination_l_log'])){
-		if(isset($_POST['filter']) && $_POST['filter']!=""){
-			$where="where l_log.u_id=i_users.u_id && l_users.u_id={$_SESSION['usr']} && l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id && l_title like '%{$_POST['filter']}%'";
-		}else{
-			$where="where l_log.u_id=l_users.u_id && l_users.u_id={$_SESSION['usr']} && l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id";
-		}
 
-		$total_page=ceil($db->count_rows("l_log,l_log_files,l_log_approve,l_users","*",$where)/$perpage);
+		$option="
+			INNER JOIN
+				l_log
+			ON 
+				l_users.u_id = l_log.u_id
+			INNER JOIN
+				l_log_approve
+			ON 
+				l_log.l_id = l_log_approve.l_id
+			INNER JOIN
+				l_log_files
+			ON 
+				l_log.l_id = l_log_files.l_id
+			INNER JOIN
+				l_position
+			ON 
+				l_users.p_id = l_position.p_id
+			INNER JOIN
+				l_province
+			ON 
+				l_users.pv_id = l_province.pv_id
+			INNER JOIN
+				l_department
+			ON 
+				l_users.d_id = l_department.d_id
+			where l_users.u_id={$_SESSION['usr']}";
+		if(isset($_POST['filter']) && $_POST['filter']!=""){	
+			$option.=" && (l_date like '{$_POST['filter']}%' || d_name like '%{$_POST['filter']}%' || l_title like '%{$_POST['filter']}%' || u_fullname like '%{$_POST['filter']}%') ";
+		}else if(isset($_POST['mode_data']) && $_POST['mode_data']!=""){
+			if($_POST['mode_data']==1){
+				$option.=" && l_log_approve.u_id IS NULL ";
+			}else{
+				$option.=" && l_log_approve.u_id!='' ";
+			}
+		}
+		
+		$total_page=ceil($db->count_rows("l_users","*",$option)/$perpage);
         $res=[
             "page"=>$total_page
         ];

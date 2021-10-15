@@ -26,9 +26,12 @@
 		</div>
 	  </div>
 </div>  
-<div class="d-sm-flex align-items-center justify-content-between mb-2" id="mode_data">
+<div class="d-sm-flex align-items-center justify-content-between mb-2" id="mode_data" aria-describedby="help_count">
     
 </div>
+<small id="help_count" class="form-text text-muted">
+	** นับจากจำนวนต่อ 1 หน้า ซึ่งจะไม่รวมกับหน้าอื่นที่เหลืออยู่ ดังนั้นควรเปิดดูหน้าอื่นๆด้วยเพื่อความชัวร์ 
+</small>
 <div class="row">
     <div class="col-lg-12 mb-4">
         <!-- Project Card  -->
@@ -477,6 +480,7 @@
                               </div>
                           </div>
                       </div>
+					  
                   `;
 
 				$("#loading").hide();
