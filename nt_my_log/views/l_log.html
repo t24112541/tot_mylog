@@ -8,11 +8,26 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
                 </div>
+				<input id="date_search" type="date" class="form-control" placeholder="ค้นหาจากวันที่..">
                 <input id="txt_search" type="text" class="form-control" placeholder="ค้นหา..">
                 <button type="button" onclick="func_search()" class="btn btn-light">ค้นหา</button>
             </div>
         </form>
     </div>    
+	
+</div>
+<div >
+	<div class="form-group">
+		<div class="form-check">
+		  <input class="form-check-input" type="checkbox" value="" id="just_now" required checked>
+		  <label class="form-check-label" for="just_now">
+			จะดูวันนี้!!
+		  </label>
+		</div>
+	  </div>
+</div>  
+<div class="d-sm-flex align-items-center justify-content-between mb-2" id="mode_data">
+    
 </div>
 <div class="row">
     <div class="col-lg-12 mb-4">
@@ -55,6 +70,9 @@
             
             <form id="frm_l_log" enctype="multipart/form-data">
                 <div class="modal-body">
+					<div class="row" id="l_user_detail">
+						
+					</div>
                     <div class="row">
 						
                         <div class="col-md-8 mb-8" id="l_title_1">
@@ -141,9 +159,27 @@
 	// -------------------------- onload ---------------------------//
 	var link_page=link+"/l_log.php";
 	open_add();
-	load_l_log('',tmp_page);
+	// load_l_log('',tmp_page,'');
 	load_l_log_title();
+	watch_just_now();
 	// ------------------------- function -------------------------//
+	$('#date_search').change(function () {
+		$('#txt_search').val($('#date_search').val());
+    });
+	function watch_just_now(){
+		if($('#just_now').prop("checked") == true){
+			const d = new Date();
+			const jn=d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+			let just_now=($("#just_now").prop("checked") == true?jn:'');
+			load_l_log(just_now,tmp_page,'');
+		}else{
+			load_l_log('',tmp_page,'');
+		}
+	}
+	
+	$('#just_now').change(function () {
+		watch_just_now();
+    });
 	$('#lf_files').imageUploadResizer({
 		max_width: 800, // Defaults 1000
 		quality: 0.8, // Defaults 1
@@ -184,7 +220,7 @@
     });
     
 	function func_search(){
-		load_l_log($("#txt_search").val(),tmp_page);
+		load_l_log($("#txt_search").val(),tmp_page,'');
 	}
 	$("#frm_search" ).submit(function( event ) {
 	  func_search();
@@ -196,7 +232,7 @@
 		let txt=`<button id="btn_save" onclick="add()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
 		$("#mng").html(txt);
 	}
-	function sh_data(l_id,l_title,l_detail,lf_file,la_date,la_comment,u_fullname,lf_id){
+	function sh_data(l_id,l_title,l_detail,lf_file,la_date,la_comment,u_fullname,lf_id,u_name){
       
         $("#frm_mode").val(2);
 		clear_input();
@@ -210,12 +246,22 @@
 					<input type="hidden" name="lf_id" id="lf_id" value="${lf_id}">
 					<input type="hidden" name="hidd_lf_file" id="hidd_lf_file" value="${lf_file}">`;
 
-		let la_comment_out=`<textarea class="form-control" rows="5" >${la_comment}</textarea>`;
+		let la_comment_out=(la_comment=="null"?``:`
+						<div class="col-md-12 mb-12" >
+                            <label class="cv_keep-left" for="la_comment">คอมเมนต์ถึงผู้ปฏิบัติงาน</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" ><i class="far fa-comment-alt"></i></span>
+                                </div>
+                                
+                                <textarea readonly class="form-control-plaintext" rows="5" id="la_comment" name="la_comment">${la_comment} : ลงวันที่ ${chk_date(la_date)}</textarea>                        
+                            </div>
+                        </div>`);
 		let img='';
 		for(i=4;i<lf_file.length;i++){
 			img+=lf_file[i];
 		}
-
+		console.log(la_comment_out);
 		$("#hidden").html(hiden);
 		$("#l_title_select").val(l_title );
 		$("#l_detail").val(l_detail);
@@ -223,7 +269,7 @@
 		$("#sh_img").attr('src',img);
 		
 		$("#la_date").val(la_date);
-        $("#la_comment").val(la_comment_out);
+        $("#l_user_detail").html(la_comment_out);
         $("#u_fullname").val(u_fullname);
 		
 		$("#modal_l_log").modal('toggle');
@@ -274,7 +320,7 @@
 				let data=JSON.parse(res);
 				if(data.status){
 					$("#modal_l_log").modal('toggle');
-					load_l_log('',tmp_page);
+					load_l_log('',tmp_page,'');
 					load_l_log_title();
 					clear_input();
 				}else{
@@ -314,7 +360,7 @@
 					let data=JSON.parse(res);
 					if(data.status){
 						$("#modal_l_log").modal('toggle');
-						load_l_log(tmp_filter,tmp_page);
+						load_l_log(tmp_filter,tmp_page,'');
 						load_l_log_title();
 						clear_input();
 					}else{
@@ -335,7 +381,7 @@
 				let data=JSON.parse(res);
 				if(data.status){
 					// $("#modal_l_log").modal('toggle');
-					load_l_log(tmp_filter,tmp_page);
+					load_l_log(tmp_filter,tmp_page,'');
 					load_l_log_title();
 					clear_input();
 				}else{
@@ -344,9 +390,11 @@
 
 			});
 	}
-	function load_l_log(filter,page){
+	function load_l_log(filter,page,mode_data){
         
 			let txt;
+			let NotApprove=0;
+			let Approved=0;
 			tmp_filter=filter;
 			$("#loading").show();
 			$.ajax({
@@ -355,30 +403,84 @@
 				data:{
 					"load_l_log":true,
 					"filter":filter,
+					"mode_data":mode_data,
 					"page":page
 				}
 			}).done((res)=>{
 				var data=JSON.parse(res);
 				if(!data.msg){
 					$.each(data,(i, item)=>{
-						// console.log(data[i]);
-						let css=`style="background-color:#e0e9e5;color:#000"`;
+						let css='';
+						if(item.a_u_id==null){
+                            css=`style="background-color:#f57a72;color:#000"`;
+							NotApprove++;
+                        }else{
+                            css=`style="background-color:#e0e9e5;color:#000"`;
+							Approved++;
+                        }
+
 						let row=(page==1?parseInt(i)+1:(parseInt(i)+1)+(page-1)*10);
 						let limit_word="";
 						
 						txt+=`<tr ${css}>
 					        <td>${row}</td>
-							<td>${item.l_date }</td>
+							<td>${chk_date(item.l_date) }</td>
 					        <td>${item.l_title }</td>
 
-					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.l_id}','${item.l_title}','${item.l_detail}','${item.lf_file}','${item.la_date}','${item.la_comment}','${item.u_fullname}','${item.lf_id}')" class="btn">
+					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.l_id}','${item.l_title}','${item.l_detail}','${item.lf_file}','${item.la_date}','${item.la_comment}','${item.u_fullname}','${item.lf_id}','${item.a_u_id}') " class="btn">
 				        		<i  class="fas fa-book-open fa-2x"></i>
 				        	</button>`;
 					});
 				}else{
 					txt=`<tr><td colspan='3' align="center">no data</td></tr>`;
 				}
+				let mode_data=`
+                      <div class="col-xl-6 col-md-6 mb-4" onclick="load_l_log('',${tmp_page},0)">
+                          <div class="card border-left-success shadow h-100 py-2">
+                              <div class="card-body">
+                                  <div class="row no-gutters align-items-center">
+                                      <div class="col mr-2">
+                                          <div class="text-xs font-weight-bold text-success text-uppercase mb-1">ตรวจแล้ว
+                                          </div>
+                                          <div class="row no-gutters align-items-center">
+                                              <div class="col-auto">
+                                                  <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">${Approved} <i class="fas fa-users"></i> </div>
+                                              </div>
+                                              
+                                          </div>
+                                      </div>
+                                      <div class="col-auto">
+                                          <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+					  <div class="col-xl-6 col-md-6 mb-4" onclick="load_l_log('',${tmp_page},1)">
+                          <div class="card border-left-danger shadow h-100 py-2">
+                              <div class="card-body">
+                                  <div class="row no-gutters align-items-center">
+                                      <div class="col mr-2">
+                                          <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">ยังไม่ตรวจ
+                                          </div>
+                                          <div class="row no-gutters align-items-center">
+                                              <div class="col-auto">
+                                                  <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">${NotApprove} <i class="fas fa-users"></i> </div>
+                                              </div>
+                                              
+                                          </div>
+                                      </div>
+                                      <div class="col-auto">
+                                          <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  `;
+
 				$("#loading").hide();
+				$("#mode_data").html(mode_data);
 				$("#l_log_content").html(txt);
 				set_pagination(filter,page);
 			});

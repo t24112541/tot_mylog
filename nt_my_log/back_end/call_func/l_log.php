@@ -10,13 +10,61 @@
 			$page=1;
 		} 
 		$start=($page-1)*$perpage;
-		if(isset($_POST['filter']) && $_POST['filter']!=""){
-			$option="where l_log.u_id=l_users.u_id && l_users.u_id={$_SESSION['usr']} && l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id && l_title like '%{$_POST['filter']}%' ";
-		}else{
-			$option="where l_log.u_id=l_users.u_id && l_users.u_id={$_SESSION['usr']} && l_log.l_id=l_log_approve.l_id && l_log.l_id=l_log_files.l_id ORDER BY
-            l_log.l_id DESC  limit {$start},{$perpage}";
+
+		$option="
+			INNER JOIN
+				l_log
+			ON 
+				l_users.u_id = l_log.u_id
+			INNER JOIN
+				l_log_approve
+			ON 
+				l_log.l_id = l_log_approve.l_id
+			INNER JOIN
+				l_log_files
+			ON 
+				l_log.l_id = l_log_files.l_id
+			INNER JOIN
+				l_position
+			ON 
+				l_users.p_id = l_position.p_id
+			INNER JOIN
+				l_province
+			ON 
+				l_users.pv_id = l_province.pv_id
+			INNER JOIN
+				l_department
+			ON 
+				l_users.d_id = l_department.d_id
+			where l_users.u_id={$_SESSION['usr']}";
+		if(isset($_POST['filter']) && $_POST['filter']!=""){	
+			$option.=" && (l_date like '{$_POST['filter']}%' || d_name like '%{$_POST['filter']}%' || l_title like '%{$_POST['filter']}%' || u_fullname like '%{$_POST['filter']}%') ";
+		}else if(isset($_POST['mode_data']) && $_POST['mode_data']!=""){
+			if($_POST['mode_data']==1){
+				$option.=" && l_log_approve.u_id IS NULL ";
+			}else{
+				$option.=" && l_log_approve.u_id!='' ";
+			}
 		}
-		echo $db->select("l_log,l_log_files,l_log_approve,l_users","*",$option);
+		$option.=" ORDER BY l_log.l_id DESC  limit {$start},{$perpage}";
+		
+		echo $db->select("l_users","
+							l_department.d_name, 
+							l_province.pv_name, 
+							l_log_files.lf_file, 
+							l_log_files.lf_id, 
+							l_position.p_name, 
+							l_position.p_priority, 
+							l_position.p_des, 
+							l_log_approve.la_date, 
+							l_log_approve.u_id as a_u_id, 
+							l_log_approve.la_comment, 
+							l_log.l_date,
+							l_log.l_id, 
+							l_log.l_detail, 
+							l_log.l_title, 
+							l_users.u_fullname, 
+							l_users.u_tel",$option);
     }else if(isset($_POST['load_l_log_employee'])){
 		if(isset($_POST['page'])){
 			$page=$_POST['page'];
