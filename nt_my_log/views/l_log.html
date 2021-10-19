@@ -121,13 +121,16 @@
                         </div>
                         <div class="col-md-12 mb-12">
                                 <label class="cv_keep-left" for="lf_files">ภาพประกอบ</label>
-                                  <div class="input-group">
+                                  <div class="input-group" aria-describedby="h_img">
                                       <div class="input-group-prepend">
                                         <span class="input-group-text" ><i class="fas fa-images"></i></span>
                                       </div>
                                       <button type="button" onclick="upload('#lf_files')" class="btn">เลือกรูปภาพ</button>
                                       <input class="form-control" type="file" accept="image/*" multiple  id="lf_files" name="lf_files" class="" style="display:none">
                                   </div>
+									<small id="h_img" class="form-text text-muted">
+										** ณ ตอนนี้ให้ใส่ 1 รูปไปก่อน แต่รูปที่ใช้ขอเป็นรูปที่ระบุพิกัดชัดเจน
+									</small>
                         </div>
                         <div class="col-md-12 mb-12" id="img_pre" >
                                 <label class="cv_keep-left" for="lf_files"></label>
