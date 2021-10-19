@@ -203,7 +203,7 @@
 
             $lf_files="";
             if(isset($_FILES) && $_FILES['lf_file']['name']!=''){
-				// $filename = resize_image("../../img/".date("Y-m-d_His").".jpg", 200, 200);
+
 				$filename = "../../img/".date("Y-m-d_His").".jpg";
 				// $db->get_arr($_FILES['lf_file']);
                 if(move_uploaded_file($_FILES['lf_file']["tmp_name"], $filename)){

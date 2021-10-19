@@ -126,13 +126,13 @@
                                         <span class="input-group-text" ><i class="fas fa-images"></i></span>
                                       </div>
                                       <button type="button" onclick="upload('#lf_files')" class="btn">เลือกรูปภาพ</button>
-                                      <input class="form-control" type="file" accept="image/*"  id="lf_files" name="lf_files" class="" style="display:none">
+                                      <input class="form-control" type="file" accept="image/*" multiple  id="lf_files" name="lf_files" class="" style="display:none">
                                   </div>
                         </div>
                         <div class="col-md-12 mb-12" id="img_pre" >
                                 <label class="cv_keep-left" for="lf_files"></label>
                                 <div class="input-group">
-                                    <div align="center">
+                                    <div align="center" id="ren_img">
                                         <center><img id="sh_img" class="rounded" width="50%">
                                     </div>
                                 </div>
@@ -166,6 +166,7 @@
 	load_l_log_title();
 	watch_just_now();
 	// ------------------------- function -------------------------//
+	
 	$('#date_search').change(function () {
 		$('#txt_search').val($('#date_search').val());
     });
@@ -189,6 +190,7 @@
 		do_not_resize: ['gif', 'svg'], // Defaults []
 	});
 	$('#lf_files').change(function () {
+		console.log(this);
 		$("#loading").show();
 		img_preview(this,'sh_img');
 		$("#loading").hide();
@@ -210,10 +212,10 @@
 	    if(e.which == 13) {
             
 	        if($("#frm_mode").val()==2){
-	    		update();
+	    		// update();
 	    	}
             else{
-	    		add();
+	    		// add();
 	    	}
 	    }
         
@@ -242,7 +244,8 @@
 		let txt='';
 
 			txt=`<button id="btn_del" data-dismiss="modal" data-toggle="modal" data-target="#del_modal" type="button" class="btn btn-danger" data-dismiss=""><i class="fas fa-trash-alt fa-1x"></i> ลบ</button>
-			<button id="btn_save" onclick="update()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>`;
+			`;
+			// <button id="btn_save" onclick="update()" type="button" class="btn btn-success" data-dismiss=""><i class="fas fa-save fa-1x"></i> บันทึก</button>
 			
 		
 		let hiden=`	<input type="hidden" name="l_id" id="l_id" value="${l_id}">
@@ -264,10 +267,10 @@
 		for(i=4;i<lf_file.length;i++){
 			img+=lf_file[i];
 		}
-		console.log(la_comment_out);
+		// console.log(la_comment_out);
 		$("#hidden").html(hiden);
 		$("#l_title_select").val(l_title );
-		$("#l_detail").val(l_detail);
+		$("#l_detail").val(l_detail.replace(/\t/g,'\n'));
 
 		$("#sh_img").attr('src',img);
 		
@@ -292,7 +295,9 @@
 		$("#msg").html("");
         let sta=0;
         let l_title="";
+
         let files = $("#lf_files")[0].files[0]; 
+
         if($("#l_title_type").val()!=""){
             l_title=$("#l_title_type").val();
         }else{
@@ -306,7 +311,8 @@
 			let data = $("#frm_l_log").serializeArray();
 			$.each(data,(key,val)=>{
 				if(val.name!="l_title_type" && val.name!="l_title_select"){
-					f_data.append(val.name,val.value);
+					console.log(val.value);
+					f_data.append(val.name,(val.value==""?"-":val.value));
 				}
 			});
             f_data.append("l_log_add",true);
@@ -344,9 +350,11 @@
 			}else{
 				l_title=$("#l_title_select").val();
 			}
+
 			$.each(data,(key,val)=>{
 				if(val.name!="l_title_type" && val.name!="l_title_select"){
-					f_data.append(val.name,val.value);
+					
+					f_data.append(val.name,(val.value===" "?"-":val.value));
 				}
 			});
 			f_data.append("l_log_update",true);
@@ -383,7 +391,7 @@
 			}).done((res)=>{
 				let data=JSON.parse(res);
 				if(data.status){
-					// $("#modal_l_log").modal('toggle');
+					$("#modal_l_log").modal('toggle');
 					load_l_log(tmp_filter,tmp_page,'');
 					load_l_log_title();
 					clear_input();
@@ -424,13 +432,14 @@
 
 						let row=(page==1?parseInt(i)+1:(parseInt(i)+1)+(page-1)*10);
 						let limit_word="";
-						
+						let detail=item.l_detail.replace(/\r\n/g,'\t');
+						console.log(detail);
 						txt+=`<tr ${css}>
 					        <td>${row}</td>
 							<td>${chk_date(item.l_date) }</td>
 					        <td>${item.l_title }</td>
 
-					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.l_id}','${item.l_title}','${item.l_detail}','${item.lf_file}','${item.la_date}','${item.la_comment}','${item.u_fullname}','${item.lf_id}','${item.a_u_id}') " class="btn">
+					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.l_id}','${item.l_title}','${detail}','${item.lf_file}','${item.la_date}','${item.la_comment}','${item.u_fullname}','${item.lf_id}','${item.a_u_id}') " class="btn">
 				        		<i  class="fas fa-book-open fa-2x"></i>
 				        	</button>`;
 					});
