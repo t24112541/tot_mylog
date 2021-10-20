@@ -111,6 +111,7 @@
 	var tmp_filter='';
     let stg_chk=0;
 	let tmp_mode_data;
+	var data_load;
 	// -------------------------- onload ---------------------------//
 	var link_page=link+"/l_log.php";
 	if($_rec.filter!="underfine"){
@@ -172,8 +173,10 @@
 	  event.preventDefault();
 	});
 	
-	function sh_data(l_id,l_title,l_detail,lf_file,la_date,la_comment,u_fullname,p_name,d_name,l_date,p_des){
-      
+	function sh_data(index){
+		// l_id,l_title,l_detail,lf_file,la_date,la_comment,u_fullname,p_name,d_name,l_date,p_des
+		// console.log(data_load[index]);
+		let l_id=data_load[index].l_id,l_title=data_load[index].l_title,l_detail=data_load[index].l_detail,lf_file=data_load[index].lf_file,la_date=data_load[index].la_date,la_comment=data_load[index].la_comment,u_fullname=data_load[index].u_fullname,p_name=data_load[index].p_name,d_name=data_load[index].d_name,l_date=data_load[index].l_date,p_des=data_load[index].p_des;
         $("#frm_mode").val(2);
 		// clear_input();
 		let txt='';
@@ -259,7 +262,7 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" ><i class="far fa-sticky-note"></i></span>
                                 </div>
-								<textarea readonly class="form-control-plaintext" class="form-control" rows="5">${l_detail}</textarea>
+								<textarea readonly class="form-control-plaintext" class="form-control" rows="5">${l_detail.replace(/\t/g,'\n')}</textarea>
 
 	                        </div>
 						</div>
@@ -365,9 +368,9 @@
 			}).done((res)=>{
 				let NotApprove=0;
 				let Approved=0;
-				let data=JSON.parse(res);
-				if(!data.msg){
-					$.each(data,(i, item)=>{
+				data_load=JSON.parse(res);
+				if(!data_load.msg){
+					$.each(data_load,(i, item)=>{
                         let css='';
                         if(item.u_id==null){
                             css=`style="background-color:#f57a72;color:#000"`;
@@ -379,7 +382,8 @@
 						
 						let row=(page==1?parseInt(i)+1:(parseInt(i)+1)+(page-1)*10);
 						let limit_word="";
-						
+						let detail=item.l_detail.replace(/\r\n/g,'\t');
+						// console.log(detail);
 						txt+=`<tr ${css}>
 					        <td>${row}</td>
 							<td>${item.l_date }</td>
@@ -387,10 +391,7 @@
                             <td>${item.u_fullname }</td>
 					        <td>${item.l_title }</td>
 
-					        <td><button style="color:#fff" type="button" onclick="sh_data('${item.l_id}','${item.l_title}'
-							,'${item.l_detail}','${item.lf_file}','${item.la_date}',
-							'${item.la_comment}','${item.u_fullname}','${item.p_name}','${item.d_name}','${item.l_date}','${item.p_des}') 
-" class="btn">
+					        <td><button style="color:#fff" type="button" onclick="sh_data(${i})" class="btn">
 				        		<i  class="fas fa-book-open fa-2x"></i>
 				        	</button>`;
 					});
