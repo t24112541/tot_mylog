@@ -7,12 +7,7 @@
                       <h1 class="h3 mb-0 text-gray-800">Dashboard <span style="color:red;font-size: 10px">*สีแดงคือมีรายการที่ยังไม่ได้ตรวจสอบ</span></h1>
                   </div>
                   <!-- Content Row -->
-                  <div class="row" id="head_var">
-                      <!-- Earnings (Monthly) Card Example -->
-                      <div id="title_of_use" class="col-xl-12 col-lg-12 row">
-
-                      </div>
-                      
+                  <div class="" id="head_var">            
                     
                   </div>
 
@@ -45,41 +40,68 @@ function title_of_use(){
     }
   }).done((res)=>{
     var data=JSON.parse(res);
-          
+    // console.log(data);  
     if(!data.msg){
-      $.each(data,(i, item)=>{
+      $.each(data,(i, items)=>{
+        txt+=`
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              ${items.branch_name}
+            </div>
+            <div class="card-body row">
+        `;
+          console.log(items.branch_name);
+          // console.log(items);
+        $.each(items.data,(i, item)=>{
+                  if((item.l_title!=undefined)){
                   if(Math.floor(Math.random() * 4)==1){color_card="primary";}
                   else if(Math.floor(Math.random() * 4)==2){color_card="success";}
                   else if(Math.floor(Math.random() * 4)==3){color_card="warning";}
                   else {color_card="info";}
                   if(!item.approved){color_card="danger";}
-        txt+=`      
-                      <div class="col-xl-3 col-md-6 mb-4" onclick="link_page('${item.l_title}')">
-                          <div class="card border-left-${color_card} shadow h-100 py-2">
-                              <div class="card-body">
-                                  <div class="row no-gutters align-items-center">
-                                      <div class="col mr-2">
-                                          <div class="text-xs font-weight-bold text-${color_card} text-uppercase mb-1">${item.l_title}  
-                                          </div>
-                                          <div class="row no-gutters align-items-center">
-                                              <div class="col-auto">
-                                                  <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">${item.num_title} <i class="fas fa-users"></i> </div>
-                                              </div>
-                                              <div class="col-auto">
-                                                  <div class="text-gray-800">${((item.approved<item.num_title)?"มีรายการรอการตรวจสอบ":"")}</div>
-                                              </div>
-                                              
-                                          </div>
-                                      </div>
-                                      <div class="col-auto">
-                                          <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
+        txt+=`  
+          
+            <div class="col-xl-3 col-md-6 mb-4 " onclick="link_page('${item.l_title}')">
+              <div class="card border-left-${color_card} shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-${color_card} text-uppercase mb-1">${item.l_title}  
                       </div>
-                      
-                  `;
+                      <div class="row no-gutters align-items-center">
+                        <div class="col-auto">
+                          <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">${item.num_title} <i class="fas fa-users"></i> </div>
+                        </div>
+                        <div class="col-auto">
+                          <div class="text-gray-800">${((item.approved<item.num_title)?"มีรายการรอการตรวจสอบ":"")}</div>
+                        </div>
+                                              
+                      </div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+                
+        `;
+        
+// 
+        }else {
+          txt+=`
+          <div class="card-body">
+            <h5 class="card-title">ไม่พบข้อมูล</h5>
+          </div>
+          `;
+        }
+      });
+        txt+=`
+            </div>
+          </div>
+        </div>`;
       });
     }
     $("#head_var").html(txt);

@@ -3,8 +3,21 @@
 
 	$perpage=10;
 
-	if(isset($_POST['title_of_use'])){
-        $table="
+	if(isset($_POST['title_of_use'])){ 
+        $data_load;
+
+        // $log[$i]=[
+        //     "date"=>$data[$i]->date,
+        //     "who"=>$data[$i]->who,
+        //     "action"=>$data[$i]->action,
+        //     "what"=>$data[$i]->what
+        // ];
+
+        $l_department=json_decode($db->select("l_department"," l_department.d_name","WHERE 1 ORDER BY
+        l_department.d_name asc")) ;
+        foreach ($l_department as $key => $val) {
+
+            $table="
             l_users
             INNER JOIN
             l_log
@@ -36,7 +49,15 @@
             count(l_log.u_id) as num_title, 
             l_log.l_title,
             count(l_log_approve.u_id) as approved";
-        echo $db->select($table,$select,"WHERE l_users.u_id <> '1' GROUP BY l_log.l_title");
+        $g_d_name=json_decode($db->select($table,$select,"WHERE l_users.u_id <> '1' && l_department.d_name='{$val->d_name}' GROUP BY l_log.l_title"), true);
+        // $db->get_arr($g_d_name);
+        $data_load[$key]=[
+            "branch_name"=>$val->d_name,
+            "data"=>$g_d_name
+        ];
+        }
+        // $db->get_arr($data_load);
+        echo json_encode($data_load);
 
 	}
 ?>
