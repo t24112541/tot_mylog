@@ -97,7 +97,8 @@
 				l_department
 			ON 
 				l_users.d_id = l_department.d_id
-			where p_priority>'{$_SESSION['p_priority']}'";
+			where p_priority>'{$_SESSION['p_priority']}' ";
+		
 		if(isset($_POST['filter']) && $_POST['filter']!=""){	
 			$option.=" && (l_date like '{$_POST['filter']}%' || d_name like '%{$_POST['filter']}%' || l_title like '%{$_POST['filter']}%' || u_fullname like '%{$_POST['filter']}%') ";
 		}else if(isset($_POST['mode_data']) && $_POST['mode_data']!=""){
@@ -107,8 +108,15 @@
 				$option.=" && l_log_approve.u_id!='' ";
 			}
 		}
+		$d_id=$_SESSION['d_id'];
+		// echo $d_id;
+		if($_SESSION['p_priority']==1){
+			$option.=" && l_department.d_id='{$d_id}' ";	
+		}
 		$option.=" ORDER BY l_log.l_id DESC  limit {$start},{$perpage}";
-		
+		// echo var_dump($_SESSION);
+// 
+		// echo $_SESSION['d_id'];
 		echo $db->select("l_users","
 							l_department.d_name, 
 							l_province.pv_name, 
@@ -158,6 +166,12 @@
 		}else{
 			$option.=" ";
 		}
+		$d_id=$_SESSION['d_id'];
+		// echo $d_id;
+		if($_SESSION['p_priority']==1){
+			$option.=" && l_department.d_id='{$d_id}' ";	
+		}
+		
 		$total_page=ceil($db->count_rows("l_users","l_log.l_id",$option)/$perpage);
         $res=[
             "page"=>$total_page

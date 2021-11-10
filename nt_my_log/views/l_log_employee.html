@@ -114,11 +114,11 @@
 	var data_load;
 	// -------------------------- onload ---------------------------//
 	var link_page=link+"/l_log.php";
-	if($_rec.filter!="underfine"){
-		load_l_log($_rec.filter,tmp_page,'');
-	}else{
+	// if($_rec.filter!="underfine"){
+	// 	load_l_log($_rec.filter,tmp_page,'');
+	// }else{
 		load_l_log('',tmp_page,'');
-	}
+	// }
 	
 	load_l_log_title();
 	// ------------------------- function -------------------------//
@@ -484,7 +484,7 @@
 						}
 					}
 				}
-				$("#pagination").append(`<li class="page-item " id="pagi_last"><a class="page-link" onclick="load_l_log('${tmp_filter}',${data},'')"><i class="fas fa-fast-forward"></i></a></li>`);
+				$("#pagination").append(`<li class="page-item " id="pagi_last"><a class="page-link" onclick="load_l_log('${tmp_filter}',${data.page},'')"><i class="fas fa-fast-forward"></i></a></li>`);
 			});	
 	}
 	

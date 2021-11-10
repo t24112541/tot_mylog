@@ -10,7 +10,7 @@
 
 		}
 		
-
+		// echo var_dump($_SESSION);
 	}else if(isset($_POST['chk_login']) || isset($_GET['chk_login'])){
 		echo $_SESSION['status'];
 		echo $_SESSION['auth']."<br>";

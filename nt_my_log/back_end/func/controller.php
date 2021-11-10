@@ -36,7 +36,7 @@ class controller{
 	}
 	function login($user,$pass){
 			$que=$this->conn->query("SELECT
-				*
+				*,l_department.d_id as d_id
 			FROM
 				l_position
 			INNER JOIN
@@ -72,6 +72,7 @@ class controller{
 					"msg"=>"ไม่พบ username password ดังกล่าว"
 				];
 			}		
+			// echo var_dump($res);
 		return json_encode($res);
 	}
 	function regist($data){
