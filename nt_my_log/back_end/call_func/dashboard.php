@@ -5,14 +5,6 @@
 
 	if(isset($_POST['title_of_use'])){ 
         $data_load;
-
-        // $log[$i]=[
-        //     "date"=>$data[$i]->date,
-        //     "who"=>$data[$i]->who,
-        //     "action"=>$data[$i]->action,
-        //     "what"=>$data[$i]->what
-        // ];
-
         $l_department=json_decode($db->select("l_department"," l_department.d_name","WHERE 1 ORDER BY
         l_department.d_name asc")) ;
         foreach ($l_department as $key => $val) {

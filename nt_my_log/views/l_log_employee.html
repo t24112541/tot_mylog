@@ -110,15 +110,17 @@
 	var tmp_page=1;
 	var tmp_filter='';
     let stg_chk=0;
-	let tmp_mode_data;
+	var tmp_mode_data;
 	var data_load;
 	// -------------------------- onload ---------------------------//
 	var link_page=link+"/l_log.php";
-	// if($_rec.filter!="underfine"){
-	// 	load_l_log($_rec.filter,tmp_page,'');
-	// }else{
+	if($_rec.filter=="undefined" ){
 		load_l_log('',tmp_page,'');
-	// }
+		// console.log($_rec.filter);
+	}else{
+		load_l_log($_rec.filter,tmp_page,'');
+		// console.log("nulllll");
+	}
 	
 	load_l_log_title();
 	// ------------------------- function -------------------------//
@@ -352,6 +354,7 @@
 			$("#l_title_select").html(txt);
 		});
 	}function load_l_log(filter,page,mode_data){
+			tmp_mode_data=mode_data;
 			let ele_mode_data;
 			let txt;
 			tmp_filter=filter;
@@ -447,12 +450,13 @@
 				$("#loading").hide();
 				$("#mode_data").html(mode_data);
 				$("#l_log_content").html(txt);
-				set_pagination(filter,page);
+				set_pagination(filter,page,tmp_mode_data);
+				console.log(tmp_mode_data);
 			});
 	}
 	
     
-	function set_pagination(filter,page){
+	function set_pagination(filter,page,mode_data){
 		let start_page;
 		let end_page;
         
@@ -462,7 +466,8 @@
 				url:link_page,
 				data:{
 					"set_pagination_l_log_employee":true,
-					"filter":filter
+					"filter":filter,
+					"mode_data":mode_data
 				}
 			}).done((res)=>{
 				var data=JSON.parse(res);
@@ -474,17 +479,17 @@
 					start_page=1;
 					end_page=10;
 				}
-				$("#pagination").append(`<li class="page-item " id="pagi_first"><a class="page-link" onclick="load_l_log('${tmp_filter}',1,'')"><i class="fas fa-fast-backward"></i></a></li>`);
+				$("#pagination").append(`<li class="page-item " id="pagi_first"><a class="page-link" onclick="load_l_log('${tmp_filter}',1,'${mode_data}')"><i class="fas fa-fast-backward"></i></a></li>`);
 				for(let i=start_page;i<=data.page;i++){
 					if(i<=end_page){
-						$("#pagination").append(`<li class="page-item" id="pagi_${i}"><a class="page-link" onclick="load_l_log('${tmp_filter}',${i},'')">${i}</a></li>`);
+						$("#pagination").append(`<li class="page-item" id="pagi_${i}"><a class="page-link" onclick="load_l_log('${tmp_filter}',${i},'${mode_data}')">${i}</a></li>`);
 						if(i==page){
 							let active_page=`#pagi_${page}`;
 							$(active_page).addClass("active");
 						}
 					}
 				}
-				$("#pagination").append(`<li class="page-item " id="pagi_last"><a class="page-link" onclick="load_l_log('${tmp_filter}',${data.page},'')"><i class="fas fa-fast-forward"></i></a></li>`);
+				$("#pagination").append(`<li class="page-item " id="pagi_last"><a class="page-link" onclick="load_l_log('${tmp_filter}',${data.page},'${mode_data}')"><i class="fas fa-fast-forward"></i></a></li>`);
 			});	
 	}
 	

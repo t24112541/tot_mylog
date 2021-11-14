@@ -2,7 +2,7 @@
 	include_once("./header.php");
 
 	$perpage=10;
-
+	$mode_data=0;
 	if(isset($_POST['load_l_log'])){
 		if(isset($_POST['page'])){
 			$page=$_POST['page'];
@@ -45,6 +45,7 @@
 			}else{
 				$option.=" && l_log_approve.u_id!='' ";
 			}
+			$mode_data=$_POST['mode_data'];
 		}
 		$option.=" ORDER BY l_log.l_id DESC  limit {$start},{$perpage}";
 		
@@ -99,7 +100,7 @@
 				l_users.d_id = l_department.d_id
 			where p_priority>'{$_SESSION['p_priority']}' ";
 		
-		if(isset($_POST['filter']) && $_POST['filter']!=""){	
+		if(isset($_POST['filter']) && $_POST['filter']!="" && $_POST['filter']!="undefined"){	
 			$option.=" && (l_date like '{$_POST['filter']}%' || d_name like '%{$_POST['filter']}%' || l_title like '%{$_POST['filter']}%' || u_fullname like '%{$_POST['filter']}%') ";
 		}else if(isset($_POST['mode_data']) && $_POST['mode_data']!=""){
 			if($_POST['mode_data']==1){
@@ -107,16 +108,19 @@
 			}else{
 				$option.=" && l_log_approve.u_id!='' ";
 			}
+			$mode_data=$_POST['mode_data'];
 		}
 		$d_id=$_SESSION['d_id'];
 		// echo $d_id;
 		if($_SESSION['p_priority']==1){
 			$option.=" && l_department.d_id='{$d_id}' ";	
 		}
-		$option.=" ORDER BY l_log.l_id DESC  limit {$start},{$perpage}";
-		// echo var_dump($_SESSION);
-// 
-		// echo $_SESSION['d_id'];
+		// $option.=" ORDER BY l_log.l_id DESC  ";
+
+		// if(empty($_POST['mode_data']) && $_POST['mode_data']==""){
+			$option.=" ORDER BY l_log.l_id DESC  limit {$start},{$perpage}";
+		// }
+
 		echo $db->select("l_users","
 							l_department.d_name, 
 							l_province.pv_name, 
@@ -161,11 +165,17 @@
 			ON 
 				l_users.d_id = l_department.d_id
 			where p_priority>'{$_SESSION['p_priority']}'";
-		if(isset($_POST['filter']) && $_POST['filter']!=""){
-			$option.=" && (l_title like '%{$_POST['filter']}%' || u_fullname like '%{$_POST['filter']}%') ";
-		}else{
-			$option.=" ";
+		if(isset($_POST['filter']) && $_POST['filter']!="" && $_POST['filter']!="undefined"){
+			$option.=" && (l_date like '{$_POST['filter']}%' || d_name like '%{$_POST['filter']}%' || l_title like '%{$_POST['filter']}%' || u_fullname like '%{$_POST['filter']}%') ";
+		}else if(isset($_POST['mode_data']) && $_POST['mode_data']!=""){
+			if($_POST['mode_data']==1){
+				$option.=" && l_log_approve.u_id IS NULL ";
+			}else{
+				$option.=" && l_log_approve.u_id!='' ";
+			}
+			$mode_data=$_POST['mode_data'];
 		}
+		
 		$d_id=$_SESSION['d_id'];
 		// echo $d_id;
 		if($_SESSION['p_priority']==1){
@@ -336,12 +346,12 @@
 			where l_users.u_id={$_SESSION['usr']}";
 		if(isset($_POST['filter']) && $_POST['filter']!=""){	
 			$option.=" && (l_date like '{$_POST['filter']}%' || d_name like '%{$_POST['filter']}%' || l_title like '%{$_POST['filter']}%' || u_fullname like '%{$_POST['filter']}%') ";
-		}else if(isset($_POST['mode_data']) && $_POST['mode_data']!=""){
-			if($_POST['mode_data']==1){
-				$option.=" && l_log_approve.u_id IS NULL ";
-			}else{
-				$option.=" && l_log_approve.u_id!='' ";
-			}
+		}
+
+		if($mode_data==1){
+			$option.=" && l_log_approve.u_id IS NULL ";
+		}else{
+			$option.=" && l_log_approve.u_id!='' ";
 		}
 		
 		$total_page=ceil($db->count_rows("l_users","*",$option)/$perpage);

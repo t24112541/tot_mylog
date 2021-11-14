@@ -10,6 +10,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PW}
       MYSQL_DATABASE: ${DB_NAME}
+      TZ: "Asia/Bangkok" 
     ports:
       - "9907:3306"
     restart: always
