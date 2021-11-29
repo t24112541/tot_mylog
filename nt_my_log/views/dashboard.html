@@ -6,6 +6,8 @@
                   <div class="d-sm-flex align-items-center justify-content-between mb-4">
                       <h1 class="h3 mb-0 text-gray-800">Dashboard <span style="color:red;font-size: 10px">*สีแดงคือมีรายการที่ยังไม่ได้ตรวจสอบ</span></h1>
                   </div>
+
+                 
                   <!-- Content Row -->
                   <div class="" id="head_var">            
                     
@@ -28,7 +30,7 @@ let link_dashboard=link+"/dashboard.php";
 
 
 title_of_use();
-
+var chart_line;
 var txt=``;
 function title_of_use(){
   let color_card='';
@@ -50,9 +52,17 @@ function title_of_use(){
               ${items.branch_name}
             </div>
             <div class="card-body row">
+              
+
         `;
-          console.log(items.branch_name);
-          // console.log(items);
+        if(!items.data.msg||!items.data.msg){
+          txt+=`
+              <div class="chart-area">
+                <canvas id="${i}"></canvas>
+              </div>
+          `;
+        }
+
         $.each(items.data,(i, item)=>{
                   if((item.l_title!=undefined)){
                   if(Math.floor(Math.random() * 4)==1){color_card="primary";}
@@ -105,11 +115,231 @@ function title_of_use(){
       });
     }
     $("#head_var").html(txt);
+    // income_5_y();
+
+    if(!data.msg){
+      $.each(data,(i, items)=>{
+        if(!items.data.msg||!items.data.msg){
+          // console.log(items.data);
+          chart_line=items.data;
+          line_chart(i,chart_line);
+        }
+      });
+    }
   });
 }
 function link_page(data){
   let link_next=`?l_log_employee=true&filter=${data}`;
-
   window.location.href = link_next;
+}
+
+function line_chart(ele_id,dataset_line){
+  
+  let data_line=[];
+  let label_line=[];
+
+// ------------------------- calculation chart -----------------------
+  let max=100;
+  let sum=0;
+
+  $.each(dataset_line,(i, items)=>{
+    sum+=parseInt(items.num_title);
+  });
+
+  $.each(dataset_line,(i, items)=>{
+    let percent=parseFloat((parseFloat(items.num_title)/sum)*100);
+    console.log(percent);
+
+    label_line.push(items.l_title);
+    data_line.push(percent);
+
+    // if(parseInt(items.num_title)>parseInt(max)){
+    //   max=items.num_title;
+    // }
+    
+  });
+  console.log(sum);
+// -------------------------------------------------------------------
+
+  var ctx = document.getElementById(ele_id);
+    var myBarChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: label_line,
+        datasets: [{
+          label: "งาน",
+          backgroundColor: "#4e73df",
+          hoverBackgroundColor: "#2e59d9",
+          borderColor: "#4e73df",
+          data: data_line,
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'month'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 10 // label under chart
+            },
+            maxBarThickness: 25, // width chart
+          }],
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: (parseInt(max)),
+              maxTicksLimit: 5,
+              padding: 10,
+
+              callback: function(value, index, values) {
+                return number_format(value)+" %";
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            }
+          }],
+        },
+        legend: {
+          display: false
+        },
+        tooltips: {
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel +' '+ number_format(tooltipItem.yLabel)+" %";
+            }
+          }
+        },
+      }
+    });
+}
+
+function income_5_y(){
+  console.log(chart_line);
+  $.ajax({
+    type:"POST",
+    url:link_dashboard,
+    data:{
+      "income_5_y":true,
+    }
+  }).done((res)=>{
+    var data=JSON.parse(res);
+    var lbl_5_y=data.lbl_name;
+    var data_5_y=data.val;
+    // income 5 years
+    var ctx = document.getElementById("income5years");
+    var myBarChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: lbl_5_y,
+        datasets: [{
+          label: "รายได้",
+          backgroundColor: "#4e73df",
+          hoverBackgroundColor: "#2e59d9",
+          borderColor: "#4e73df",
+          data: data_5_y,
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            left: 10,
+            right: 25,
+            top: 25,
+            bottom: 0
+          }
+        },
+        scales: {
+          xAxes: [{
+            time: {
+              unit: 'month'
+            },
+            gridLines: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              maxTicksLimit: 6
+            },
+            maxBarThickness: 25,
+          }],
+          yAxes: [{
+            ticks: {
+              min: 0,
+              max: 15000,
+              maxTicksLimit: 5,
+              padding: 10,
+              // Include a dollar sign in the ticks
+              callback: function(value, index, values) {
+                return number_format(value)+" ฿";
+              }
+            },
+            gridLines: {
+              color: "rgb(234, 236, 244)",
+              zeroLineColor: "rgb(234, 236, 244)",
+              drawBorder: false,
+              borderDash: [2],
+              zeroLineBorderDash: [2]
+            }
+          }],
+        },
+        legend: {
+          display: false
+        },
+        tooltips: {
+          titleMarginBottom: 10,
+          titleFontColor: '#6e707e',
+          titleFontSize: 14,
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          caretPadding: 10,
+          callbacks: {
+            label: function(tooltipItem, chart) {
+              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+              return datasetLabel + number_format(tooltipItem.yLabel)+" ฿";
+            }
+          }
+        },
+      }
+    });
+
+  });    
+  market_share();   
 }
 </script>	
