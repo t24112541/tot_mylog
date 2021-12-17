@@ -1,5 +1,5 @@
 <?php
-	include_once("./header.php");
+	include_once("./header.php"); 
 
 	$perpage=10;
 
@@ -41,7 +41,7 @@
             count(l_log.u_id) as num_title, 
             l_log.l_title,
             count(l_log_approve.u_id) as approved";
-        $g_d_name=json_decode($db->select($table,$select,"WHERE l_users.u_id <> '1' && l_department.d_name='{$val->d_name}' GROUP BY l_log.l_title"), true);
+        $g_d_name=json_decode($db->select($table,$select,"WHERE l_users.u_id <> '1' && l_department.d_name='{$val->d_name}' && l_log.l_date BETWEEN '{$_POST['start_date']}' AND '{$_POST['end_date']}' GROUP BY l_log.l_title"), true);
         // $db->get_arr($g_d_name);
         $data_load[$key]=[
             "branch_name"=>$val->d_name,
@@ -51,5 +51,10 @@
         // $db->get_arr($data_load);
         echo json_encode($data_load);
 
-	}
+	}else if(isset($_POST['get_date'])){
+        $data=[
+            "date"=>date("d/m/Y")
+        ];
+        echo json_encode($data);
+    }
 ?>

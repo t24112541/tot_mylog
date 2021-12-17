@@ -4,10 +4,22 @@
 
                   <!-- Page Heading -->
                   <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                      <h1 class="h3 mb-0 text-gray-800">Dashboard <span style="color:red;font-size: 10px">*สีแดงคือมีรายการที่ยังไม่ได้ตรวจสอบ</span></h1>
-                  </div>
+                      <h1 class="h3 mb-0 text-gray-800">Dashboard <!--<span style="color:red;font-size: 10px">*สีแดงคือมีรายการที่ยังไม่ได้ตรวจสอบ</span>--> </h1>
+                      <div class="">
+                        <form class="form-inline" id="frm_search">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
 
-                 
+                                <input id="start_date" type="text" class="form-control" placeholder="ค้นหาจากวันที่">
+                                <input id="end_date" type="text" class="form-control" placeholder="ถึงวันที่">
+                                <button type="button" onclick="scope_date()" class="btn btn-light">ค้นหา</button>
+                            </div>
+                        </form>
+                      </div>    
+
+                  </div>
                   <!-- Content Row -->
                   <div class="" id="head_var">            
                     
@@ -15,331 +27,272 @@
 
                   <!-- Content Row -->
 
-
               </div>
               <!-- /.container-fluid -->
 <script src="./libs/node_modules/chart.js/dist/chart.js"></script>
-  <!-- Page level plugins -->
-  <script src="vendor/chart.js/Chart.min.js"></script>
+<script src="vendor/chart.js/Chart.min.js"></script>
+
+<link href="./css/datepicker.css" rel="stylesheet">
+<script type="text/javascript" src="./js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="./js/bootstrap-datepicker-thai.js"></script>
+<script type="text/javascript" src="./js/locales/bootstrap-datepicker.th.js"></script>
+
 <script>
 
-// Set new default font family and font color to mimic Bootstrap's default styling
-Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-Chart.defaults.global.defaultFontColor = '#858796';
-let link_dashboard=link+"/dashboard.php";
+  // Set new default font family and font color to mimic Bootstrap's default styling
+  Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+  Chart.defaults.global.defaultFontColor = '#858796';
+  let link_dashboard=link+"/dashboard.php";
 
+  var chart_line;
 
-title_of_use();
-var chart_line;
-var txt=``;
-function title_of_use(){
-  let color_card='';
-  $.ajax({
-    type:"POST",
-    url:link_dashboard,
-    data:{
-      "title_of_use":true,
+  get_date();
+
+  function get_date(){
+    $.ajax({
+      type:"POST",
+      url:link_dashboard,
+      data:{
+        "get_date":true
+      }
+    }).done((res)=>{
+      var data=JSON.parse(res);
+      convert_date(data,1);
+    });
+  }
+  function scope_date(){
+    let start=convert_date($('#start_date').val(),2);
+    let end=convert_date($('#end_date').val(),3);
+    title_of_use(start,end);
+  }
+  function convert_date(date,mode){
+    if(mode==1){  //////////////////// convert to datetime picker
+      let date_split=date.date.split('/');
+      let d=date_split[0];
+      let m=date_split[1];
+      let Y=date_split[2];
+
+      let start=`1/${m}/${parseInt(Y)+543}`;
+      let end=`${d}/${m}/${parseInt(Y)+543}`;
+      $("#start_date").datepicker({
+        language:'th-th',
+        format:'dd/mm/yyyy',
+        autoclose: true
+      });
+      $("#end_date").datepicker({
+        language:'th-th',
+        format:'dd/mm/yyyy',
+        autoclose: true
+      });
+      $("#start_date").val(start);
+      $("#end_date").val(end);
+      scope_date();
+    }else if(mode==2){ ////////////////////////// convert start date to api
+      let date_split=date.split('/');
+      let d=date_split[0];
+      let m=date_split[1];
+      let Y=date_split[2];
+      let start=`${parseInt(Y)-543}-${m}-${d}`;
+      return start;
+    }else if(mode==3){ ////////////////////////// convert end date to api
+      let date_split=date.split('/');
+      let d=date_split[0];
+      let m=date_split[1];
+      let Y=date_split[2];
+      let start=`${parseInt(Y)-543}-${m}-${parseInt(d)+1}`;
+      return start;
     }
-  }).done((res)=>{
-    var data=JSON.parse(res);
-    // console.log(data);  
-    if(!data.msg){
-      $.each(data,(i, items)=>{
-        txt+=`
-        <div class="col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              ${items.branch_name}
-            </div>
-            <div class="card-body row">
-              
-
-        `;
-        if(!items.data.msg||!items.data.msg){
+  }
+  function title_of_use(start_date,end_date){
+    let color_card='';
+    var txt=``;
+    $.ajax({
+      type:"POST",
+      url:link_dashboard,
+      data:{
+        "title_of_use":true,
+        "start_date":start_date,
+        "end_date":end_date
+      }
+    }).done((res)=>{
+      var data=JSON.parse(res);
+      if(!data.msg){
+        $.each(data,(i, items)=>{
           txt+=`
-              <div class="chart-area">
-                <canvas id="${i}"></canvas>
+          <div class="col-sm-12">
+            <div class="card">
+              <div class="card-header">
+                ${items.branch_name}
               </div>
+              <div class="card-body row">
           `;
-        }
-
-        $.each(items.data,(i, item)=>{
-                  if((item.l_title!=undefined)){
-                  if(Math.floor(Math.random() * 4)==1){color_card="primary";}
-                  else if(Math.floor(Math.random() * 4)==2){color_card="success";}
-                  else if(Math.floor(Math.random() * 4)==3){color_card="warning";}
-                  else {color_card="info";}
-                  if(!item.approved){color_card="danger";}
-        txt+=`  
-          
-            <div class="col-xl-3 col-md-6 mb-4 " onclick="link_page('${item.l_title}')">
-              <div class="card border-left-${color_card} shadow h-100 py-2">
-                <div class="card-body">
-                  <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-${color_card} text-uppercase mb-1">${item.l_title}  
-                      </div>
-                      <div class="row no-gutters align-items-center">
-                        <div class="col-auto">
-                          <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">${item.num_title} <i class="fas fa-users"></i> </div>
+          if(!items.data.msg||!items.data.msg){
+            txt+=`
+                <div class="chart-area">
+                  <canvas id="${i}"></canvas>
+                </div>
+            `;
+          }
+          $.each(items.data,(i, item)=>{
+                    if((item.l_title!=undefined)){
+                    if(Math.floor(Math.random() * 4)==1){color_card="primary";}
+                    else if(Math.floor(Math.random() * 4)==2){color_card="success";}
+                    else if(Math.floor(Math.random() * 4)==3){color_card="warning";}
+                    else {color_card="info";}
+                    if(!item.approved){color_card="danger";}
+          txt+=`  
+              <div class="col-xl-3 col-md-6 mb-4 " onclick="link_page('${item.l_title}')">
+                <div class="card border-left-${color_card} shadow h-100 py-2">
+                  <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                      <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-${color_card} text-uppercase mb-1">${item.l_title}  
                         </div>
-                        <div class="col-auto">
-                          <div class="text-gray-800">${((item.approved<item.num_title)?"มีรายการรอการตรวจสอบ":"")}</div>
+                        <div class="row no-gutters align-items-center">
+                          <div class="col-auto">
+                            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">${item.num_title} <i class="fas fa-users"></i> </div>
+                          </div>
+                          <div class="col-auto">
+                            <div class="text-gray-800">${((item.approved<item.num_title)?"มีรายการรอการตรวจสอบ":"")}</div>
+                          </div>
+                                                
                         </div>
-                                              
                       </div>
-                    </div>
-                    <div class="col-auto">
-                      <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                      <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-                
-        `;
-        
-// 
-        }else {
-          txt+=`
-          <div class="card-body">
-            <h5 class="card-title">ไม่พบข้อมูล</h5>
-          </div>
+                  
           `;
-        }
-      });
-        txt+=`
+          }else {
+            txt+=`
+            <div class="card-body">
+              <h5 class="card-title">ไม่พบข้อมูล</h5>
             </div>
-          </div>
-        </div>`;
-      });
-    }
-    $("#head_var").html(txt);
-    // income_5_y();
+            `;
+          }
+        });
+          txt+=`
+              </div>
+            </div>
+          </div>`;
+        });
+      }
+      $("#head_var").html(txt);
+      if(!data.msg){
+        $.each(data,(i, items)=>{
+          if(!items.data.msg||!items.data.msg){
+            chart_line=items.data;
+            line_chart(i,chart_line);
+          }
+        });
+      }
+    });
+  }
+  function link_page(data){
+    let link_next=`?l_log_employee=true&filter=${data}`;
+    window.location.href = link_next;
+  }
 
-    if(!data.msg){
-      $.each(data,(i, items)=>{
-        if(!items.data.msg||!items.data.msg){
-          // console.log(items.data);
-          chart_line=items.data;
-          line_chart(i,chart_line);
+  function line_chart(ele_id,dataset_line){
+    let data_line=[];
+    let label_line=[];
+  // ------------------------- calculation chart -----------------------
+    let max=100;
+    let sum=0;
+    $.each(dataset_line,(i, items)=>{
+      sum+=parseInt(items.num_title);
+    });
+    $.each(dataset_line,(i, items)=>{
+      let percent=parseFloat((parseFloat(items.num_title)/sum)*100);
+      label_line.push(items.l_title);
+      data_line.push(percent);
+    });
+
+  // -------------------------------------------------------------------
+
+    var ctx = document.getElementById(ele_id);
+    var myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: label_line,
+          datasets: [{
+            label: "งาน",
+            backgroundColor: "#4e73df",
+            hoverBackgroundColor: "#2e59d9",
+            borderColor: "#4e73df",
+            data: data_line,
+          }],
+        },
+        options: {
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              left: 10,
+              right: 25,
+              top: 25,
+              bottom: 0
+            }
+          },
+          scales: {
+            xAxes: [{
+              time: {
+                unit: 'month'
+              },
+              gridLines: {
+                display: false,
+                drawBorder: false
+              },
+              ticks: {
+                maxTicksLimit: 10 // label under chart
+              },
+              maxBarThickness: 25, // width chart
+            }],
+            yAxes: [{
+              ticks: {
+                min: 0,
+                max: (parseInt(max)),
+                maxTicksLimit: 5,
+                padding: 10,
+                callback: function(value, index, values) {
+                  return number_format(value)+" %";
+                }
+              },
+              gridLines: {
+                color: "rgb(234, 236, 244)",
+                zeroLineColor: "rgb(234, 236, 244)",
+                drawBorder: false,
+                borderDash: [2],
+                zeroLineBorderDash: [2]
+              }
+            }],
+          },
+          legend: {
+            display: false
+          },
+          tooltips: {
+            titleMarginBottom: 10,
+            titleFontColor: '#6e707e',
+            titleFontSize: 14,
+            backgroundColor: "rgb(255,255,255)",
+            bodyFontColor: "#858796",
+            borderColor: '#dddfeb',
+            borderWidth: 1,
+            xPadding: 15,
+            yPadding: 15,
+            displayColors: false,
+            caretPadding: 10,
+            callbacks: {
+              label: function(tooltipItem, chart) {
+                var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                return datasetLabel +' '+ number_format(tooltipItem.yLabel)+" %";
+              }
+            }
+          },
         }
       });
-    }
-  });
-}
-function link_page(data){
-  let link_next=`?l_log_employee=true&filter=${data}`;
-  window.location.href = link_next;
-}
-
-function line_chart(ele_id,dataset_line){
-  
-  let data_line=[];
-  let label_line=[];
-
-// ------------------------- calculation chart -----------------------
-  let max=100;
-  let sum=0;
-
-  $.each(dataset_line,(i, items)=>{
-    sum+=parseInt(items.num_title);
-  });
-
-  $.each(dataset_line,(i, items)=>{
-    let percent=parseFloat((parseFloat(items.num_title)/sum)*100);
-    console.log(percent);
-
-    label_line.push(items.l_title);
-    data_line.push(percent);
-
-    // if(parseInt(items.num_title)>parseInt(max)){
-    //   max=items.num_title;
-    // }
-    
-  });
-  console.log(sum);
-// -------------------------------------------------------------------
-
-  var ctx = document.getElementById(ele_id);
-    var myBarChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: label_line,
-        datasets: [{
-          label: "งาน",
-          backgroundColor: "#4e73df",
-          hoverBackgroundColor: "#2e59d9",
-          borderColor: "#4e73df",
-          data: data_line,
-        }],
-      },
-      options: {
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            left: 10,
-            right: 25,
-            top: 25,
-            bottom: 0
-          }
-        },
-        scales: {
-          xAxes: [{
-            time: {
-              unit: 'month'
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false
-            },
-            ticks: {
-              maxTicksLimit: 10 // label under chart
-            },
-            maxBarThickness: 25, // width chart
-          }],
-          yAxes: [{
-            ticks: {
-              min: 0,
-              max: (parseInt(max)),
-              maxTicksLimit: 5,
-              padding: 10,
-
-              callback: function(value, index, values) {
-                return number_format(value)+" %";
-              }
-            },
-            gridLines: {
-              color: "rgb(234, 236, 244)",
-              zeroLineColor: "rgb(234, 236, 244)",
-              drawBorder: false,
-              borderDash: [2],
-              zeroLineBorderDash: [2]
-            }
-          }],
-        },
-        legend: {
-          display: false
-        },
-        tooltips: {
-          titleMarginBottom: 10,
-          titleFontColor: '#6e707e',
-          titleFontSize: 14,
-          backgroundColor: "rgb(255,255,255)",
-          bodyFontColor: "#858796",
-          borderColor: '#dddfeb',
-          borderWidth: 1,
-          xPadding: 15,
-          yPadding: 15,
-          displayColors: false,
-          caretPadding: 10,
-          callbacks: {
-            label: function(tooltipItem, chart) {
-              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-              return datasetLabel +' '+ number_format(tooltipItem.yLabel)+" %";
-            }
-          }
-        },
-      }
-    });
-}
-
-function income_5_y(){
-  console.log(chart_line);
-  $.ajax({
-    type:"POST",
-    url:link_dashboard,
-    data:{
-      "income_5_y":true,
-    }
-  }).done((res)=>{
-    var data=JSON.parse(res);
-    var lbl_5_y=data.lbl_name;
-    var data_5_y=data.val;
-    // income 5 years
-    var ctx = document.getElementById("income5years");
-    var myBarChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: lbl_5_y,
-        datasets: [{
-          label: "รายได้",
-          backgroundColor: "#4e73df",
-          hoverBackgroundColor: "#2e59d9",
-          borderColor: "#4e73df",
-          data: data_5_y,
-        }],
-      },
-      options: {
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            left: 10,
-            right: 25,
-            top: 25,
-            bottom: 0
-          }
-        },
-        scales: {
-          xAxes: [{
-            time: {
-              unit: 'month'
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false
-            },
-            ticks: {
-              maxTicksLimit: 6
-            },
-            maxBarThickness: 25,
-          }],
-          yAxes: [{
-            ticks: {
-              min: 0,
-              max: 15000,
-              maxTicksLimit: 5,
-              padding: 10,
-              // Include a dollar sign in the ticks
-              callback: function(value, index, values) {
-                return number_format(value)+" ฿";
-              }
-            },
-            gridLines: {
-              color: "rgb(234, 236, 244)",
-              zeroLineColor: "rgb(234, 236, 244)",
-              drawBorder: false,
-              borderDash: [2],
-              zeroLineBorderDash: [2]
-            }
-          }],
-        },
-        legend: {
-          display: false
-        },
-        tooltips: {
-          titleMarginBottom: 10,
-          titleFontColor: '#6e707e',
-          titleFontSize: 14,
-          backgroundColor: "rgb(255,255,255)",
-          bodyFontColor: "#858796",
-          borderColor: '#dddfeb',
-          borderWidth: 1,
-          xPadding: 15,
-          yPadding: 15,
-          displayColors: false,
-          caretPadding: 10,
-          callbacks: {
-            label: function(tooltipItem, chart) {
-              var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
-              return datasetLabel + number_format(tooltipItem.yLabel)+" ฿";
-            }
-          }
-        },
-      }
-    });
-
-  });    
-  market_share();   
-}
+  }
 </script>	

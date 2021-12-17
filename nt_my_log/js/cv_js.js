@@ -10,18 +10,12 @@ function img_preview(img,target){
 	reader.onload=function(){
 		document.getElementById(target).src=reader.result;
 	}
-	reader.readAsDataURL(img.files[0]);
-
-
-	
+	reader.readAsDataURL(img.files[0]);	
 }
 function chk_date(date){
-	// console.log(date);
 	if(date!=null){
 		let month=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
 		let date_ex=date.split("-");
-		// console.log(parseInt(date_ex[0])+543);
-		// console.log(month[parseInt(date_ex[1])-1]);
 		return parseInt(date_ex[2])+" "+month[parseInt(date_ex[1])-1]+" "+(parseInt(date_ex[0])+543);
 	}else{return "";}
 }
