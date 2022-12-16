@@ -28,8 +28,15 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PW}
       MYSQL_DATABASE: ${DB_NAME}
+      VIRTUAL_HOST: 127.0.0.1
+      VIRTUAL_PORT: 8001
+      LETSENCRYPT_HOST: 127.0.0.1
+      LETSENCRYPT_EMAIL: t24112541@gmail.com
     ports:
       - "8001:80"
+    expose:
+      - "8001"
     stdin_open: true
     tty: true
     restart: always
+    network_mode: bridge
